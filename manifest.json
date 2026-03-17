@@ -1,0 +1,17 @@
+{
+  "name": "QuickRider Dispatch",
+  "short_name": "QuickRider",
+  "description": "Secure logistics for Port Harcourt",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#4f46e5",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2830/2830305.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

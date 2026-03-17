@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickRider - Welcome</title>
+    
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#020617">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-slate-950 text-slate-50 min-h-screen flex flex-col items-center justify-center p-6 selection:bg-indigo-500/30 relative overflow-hidden">
+
+    <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-indigo-600/20 rounded-full blur-[100px] pointer-events-none"></div>
+    <div class="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-cyan-600/10 rounded-full blur-[100px] pointer-events-none"></div>
+
+    <div class="w-full max-w-sm relative z-10 animate-fade-in-up">
+        <div class="text-center mb-10">
+            <div class="w-20 h-20 bg-gradient-to-br from-indigo-500 to-cyan-400 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(79,70,229,0.3)] transform -rotate-6">
+                <i data-lucide="zap" class="w-10 h-10 text-white fill-white"></i>
+            </div>
+            <h1 class="text-4xl font-extrabold tracking-tight text-white mb-2">QuickRider</h1>
+            <p class="text-slate-400">Port Harcourt's decentralized logistics network.</p>
+        </div>
+
+        <div class="space-y-4">
+            
+            <a href="vendor.html" class="block group relative bg-slate-900/80 backdrop-blur-md border border-slate-800 hover:border-indigo-500/50 rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_40px_-10px_rgba(79,70,229,0.3)] overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-r from-indigo-600/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div class="flex items-center gap-5 relative z-10">
+                    <div class="w-14 h-14 bg-indigo-500/10 rounded-xl flex items-center justify-center border border-indigo-500/20 group-hover:scale-110 transition-transform">
+                        <i data-lucide="package" class="w-6 h-6 text-indigo-400"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-white mb-1">Send a Package</h2>
+                        <p class="text-xs text-slate-400 leading-relaxed">Broadcast a payload to nearby verified riders and negotiate your price.</p>
+                    </div>
+                </div>
+            </a>
+
+            <a href="rider.html" class="block group relative bg-slate-900/80 backdrop-blur-md border border-slate-800 hover:border-emerald-500/50 rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_40px_-10px_rgba(16,185,129,0.2)] overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-r from-emerald-600/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div class="flex items-center gap-5 relative z-10">
+                    <div class="w-14 h-14 bg-emerald-500/10 rounded-xl flex items-center justify-center border border-emerald-500/20 group-hover:scale-110 transition-transform">
+                        <i data-lucide="bike" class="w-6 h-6 text-emerald-400"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-white mb-1">Drive & Earn</h2>
+                        <p class="text-xs text-slate-400 leading-relaxed">Accept dispatches, negotiate payouts, and track your daily earnings.</p>
+                    </div>
+                </div>
+            </a>
+
+        </div>
+
+        <div class="mt-10 text-center">
+            <p class="text-[10px] text-slate-600 font-mono uppercase tracking-widest">v1.0.0 Matrix Engine</p>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration failed:', err));
+            });
+        }
+    </script>
+</body>
+</html>

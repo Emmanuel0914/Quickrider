@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickRider - Vendor Portal</title>
+    
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-slate-950 text-slate-50 min-h-screen flex flex-col items-center py-10 px-4 selection:bg-indigo-500/30">
+
+    <div class="w-full max-w-md flex justify-end mb-2 hidden" id="vendorNav">
+        <button onclick="logoutVendor()" class="text-xs font-bold text-slate-500 hover:text-rose-400 flex items-center gap-1 transition-colors">
+            <i data-lucide="log-out" class="w-3 h-3"></i> Logout
+        </button>
+    </div>
+
+    <div class="w-full max-w-md bg-slate-900/50 backdrop-blur-xl border border-white/10 p-8 rounded-2xl shadow-2xl relative overflow-hidden hidden" id="mainDashboard">
+        <div class="text-center mb-8 relative z-10">
+            <h2 class="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent mb-1">QuickRider</h2>
+            <p class="text-indigo-400 text-xs font-bold uppercase tracking-widest" id="welcomeText">Vendor Portal</p>
+        </div>
+
+        <form id="deliveryForm" class="space-y-5 relative z-10">
+            <div class="space-y-1">
+                <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Pickup Address</label>
+                <div class="relative group">
+                    <i data-lucide="map-pin" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"></i>
+                    <input type="text" id="pickup" class="w-full pl-10 pr-4 py-2.5 bg-slate-950/50 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-indigo-500/50" required>
+                </div>
+            </div>
+
+            <div class="space-y-1">
+                <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Drop-off Address</label>
+                <div class="relative group">
+                    <i data-lucide="navigation" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"></i>
+                    <input type="text" id="dropoff" class="w-full pl-10 pr-4 py-2.5 bg-slate-950/50 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-indigo-500/50" required>
+                </div>
+            </div>
+
+            <div class="space-y-1">
+                <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Payload Description</label>
+                <div class="relative group">
+                    <i data-lucide="package" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"></i>
+                    <input type="text" id="item" class="w-full pl-10 pr-4 py-2.5 bg-slate-950/50 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-indigo-500/50" required>
+                </div>
+            </div>
+
+            <div class="space-y-1">
+                <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Receiver's Phone</label>
+                <div class="relative group">
+                    <i data-lucide="phone" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"></i>
+                    <input type="tel" id="phone" class="w-full pl-10 pr-4 py-2.5 bg-slate-950/50 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-indigo-500/50" required>
+                </div>
+            </div>
+
+            <div class="space-y-1">
+                <label class="text-xs font-semibold text-indigo-400 uppercase tracking-wider">Your Offer (₦)</label>
+                <div class="relative group">
+                    <i data-lucide="wallet" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-indigo-400"></i>
+                    <input type="number" id="offerPrice" placeholder="e.g. 1500" class="w-full pl-10 pr-4 py-2.5 bg-indigo-500/10 border border-indigo-500/30 rounded-lg text-sm font-bold text-white focus:outline-none focus:border-indigo-500" required>
+                </div>
+            </div>
+
+            <button type="submit" class="w-full mt-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 px-4 rounded-lg transition-all shadow-[0_0_15px_rgba(79,70,229,0.3)]">Broadcast Offer</button>
+        </form>
+
+        <div id="vendorTracking" class="mt-8 pt-6 border-t border-slate-800/50 hidden relative z-10">
+            <h3 class="text-sm font-bold text-slate-300 mb-4 flex items-center gap-2">
+                <i data-lucide="activity" class="w-4 h-4 text-cyan-400"></i> Active Dispatches
+            </h3>
+            <div id="myOrdersList" class="space-y-4 mb-6"></div>
+
+            <h3 class="text-sm font-bold text-slate-300 mb-4 flex items-center gap-2 border-t border-slate-800/50 pt-4">
+                <i data-lucide="archive" class="w-4 h-4 text-slate-500"></i> Delivery History
+            </h3>
+            <div id="myHistoryList" class="space-y-4"></div>
+        </div>
+    </div>
+
+    <div id="authModal" class="fixed inset-0 z-[300] bg-slate-950/95 backdrop-blur-md flex items-center justify-center">
+        <div class="bg-slate-900 border border-slate-800 p-8 rounded-2xl shadow-2xl w-full max-w-sm">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-indigo-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-indigo-500/20 transform -rotate-6">
+                    <i data-lucide="package" class="w-8 h-8 text-indigo-400"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-white">Vendor Access</h2>
+                <p class="text-xs text-slate-400 mt-2 leading-relaxed">Log in to manage your dispatches. If you don't have an account, one will be created automatically.</p>
+            </div>
+            
+            <form id="authForm" class="space-y-4">
+                <div>
+                    <label class="text-xs font-semibold text-slate-400 uppercase">Username</label>
+                    <div class="relative group mt-1">
+                        <i data-lucide="user" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"></i>
+                        <input type="text" id="authUsername" class="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-800 rounded-lg text-white focus:border-indigo-500 focus:outline-none" required>
+                    </div>
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-slate-400 uppercase">Password</label>
+                    <div class="relative group mt-1">
+                        <i data-lucide="lock" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"></i>
+                        <input type="password" id="authPassword" class="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-800 rounded-lg text-white focus:border-indigo-500 focus:outline-none" required>
+                    </div>
+                </div>
+                
+                <p id="authError" class="text-xs text-rose-500 font-bold hidden text-center"></p>
+
+                <button type="submit" id="authBtn" class="w-full mt-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-lg transition-colors shadow-[0_0_15px_rgba(79,70,229,0.3)]">
+                    Access Portal
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="qrModal" class="fixed inset-0 z-[100] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-2xl w-full max-w-sm transform scale-95 transition-all duration-300" id="qrModalContent">
+            <div class="flex items-center gap-3 mb-2">
+                <div id="qrModalIconContainer" class="p-2 rounded-full bg-indigo-500/10">
+                    <i id="qrModalIcon" data-lucide="alert-circle" class="w-5 h-5 text-indigo-400"></i>
+                </div>
+                <h3 id="qrModalTitle" class="text-lg font-bold text-white">Attention</h3>
+            </div>
+            <p id="qrModalMessage" class="text-sm text-slate-400 mb-6 mt-2">Message.</p>
+            <div class="flex gap-3 justify-end" id="qrModalButtons"></div>
+        </div>
+    </div>
+
+    <div id="celebrationModal" class="fixed inset-0 z-[200] bg-slate-950/70 backdrop-blur-xl flex items-center justify-center hidden opacity-0 transition-opacity duration-500">
+        <div class="bg-gradient-to-br from-emerald-900/40 to-slate-900/90 border border-emerald-500/30 p-8 rounded-3xl shadow-[0_0_50px_rgba(16,185,129,0.15)] w-full max-w-sm text-center transform scale-90 transition-all duration-500" id="celebrationContent">
+            <div class="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-5 border border-emerald-500/50 animate-bounce shadow-[0_0_20px_rgba(16,185,129,0.3)]">
+                <i data-lucide="package-check" class="w-10 h-10 text-emerald-400"></i>
+            </div>
+            <h2 class="text-2xl font-extrabold text-white mb-2 tracking-tight">Delivery Secured!</h2>
+            <p class="text-sm text-emerald-200/70 mb-8" id="celebrationMessage">Your package has successfully reached its destination.</p>
+            <button onclick="closeCelebration()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3 px-6 rounded-xl transition-all shadow-[0_0_15px_rgba(16,185,129,0.4)]">Awesome</button>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // --- CORE VARIABLES ---
+        let loggedInUsername = localStorage.getItem('qr_vendor_username');
+        let refreshInterval;
+        let knownDeliveries = JSON.parse(localStorage.getItem('qr_known_deliveries')) || [];
+
+        // --- AUTHENTICATION ENGINE ---
+        function checkAuth() {
+            if (loggedInUsername) {
+                document.getElementById('authModal').classList.add('hidden');
+                document.getElementById('mainDashboard').classList.remove('hidden');
+                document.getElementById('vendorNav').classList.remove('hidden');
+                document.getElementById('welcomeText').innerText = `Welcome back, ${loggedInUsername}`;
+                
+                loadVendorOrders();
+                refreshInterval = setInterval(loadVendorOrders, 3000);
+            } else {
+                document.getElementById('authModal').classList.remove('hidden');
+                document.getElementById('mainDashboard').classList.add('hidden');
+                document.getElementById('vendorNav').classList.add('hidden');
+                if(refreshInterval) clearInterval(refreshInterval);
+            }
+        }
+
+        document.getElementById('authForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const user = document.getElementById('authUsername').value.trim();
+            const pass = document.getElementById('authPassword').value;
+            const errorText = document.getElementById('authError');
+            const btn = document.getElementById('authBtn');
+
+            btn.innerHTML = `<i data-lucide="loader" class="w-4 h-4 inline animate-spin"></i> Authenticating...`;
+            lucide.createIcons();
+
+            try {
+                const res = await fetch('/vendor-auth', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: user, password: pass })
+                });
+                
+                const data = await res.json();
+
+                if (res.ok) {
+                    localStorage.setItem('qr_vendor_username', user.toLowerCase());
+                    loggedInUsername = user.toLowerCase();
+                    errorText.classList.add('hidden');
+                    checkAuth();
+                } else {
+                    errorText.innerText = data.message;
+                    errorText.classList.remove('hidden');
+                }
+            } catch (err) {
+                errorText.innerText = "Network error. Is the server running?";
+                errorText.classList.remove('hidden');
+            }
+            btn.innerText = "Access Portal";
+        });
+
+        function logoutVendor() {
+            localStorage.removeItem('qr_vendor_username');
+            loggedInUsername = null;
+            document.getElementById('authUsername').value = '';
+            document.getElementById('authPassword').value = '';
+            checkAuth();
+        }
+
+        function closeCelebration() {
+            const modal = document.getElementById('celebrationModal');
+            const content = document.getElementById('celebrationContent');
+            modal.classList.add('opacity-0');
+            content.classList.add('scale-90');
+            setTimeout(() => modal.classList.add('hidden'), 500);
+        }
+
+        // --- UNIVERSAL MODAL ENGINE ---
+        function showModal(type, title, message, confirmBtnText = "OK", isDestructive = false) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('qrModal');
+                const modalContent = document.getElementById('qrModalContent');
+                const btnContainer = document.getElementById('qrModalButtons');
+                const icon = document.getElementById('qrModalIcon');
+                const iconContainer = document.getElementById('qrModalIconContainer');
+                
+                document.getElementById('qrModalTitle').innerText = title;
+                document.getElementById('qrModalMessage').innerText = message;
+                
+                if (isDestructive) {
+                    icon.setAttribute('data-lucide', 'alert-triangle');
+                    icon.className = "w-5 h-5 text-rose-500";
+                    iconContainer.className = "p-2 rounded-full bg-rose-500/10";
+                } else {
+                    icon.setAttribute('data-lucide', 'info');
+                    icon.className = "w-5 h-5 text-indigo-400";
+                    iconContainer.className = "p-2 rounded-full bg-indigo-500/10";
+                }
+                
+                btnContainer.innerHTML = '';
+                const closeModal = () => {
+                    modal.classList.add('opacity-0');
+                    modalContent.classList.add('scale-95');
+                    setTimeout(() => modal.classList.add('hidden'), 300);
+                };
+
+                if (type === 'confirm') {
+                    const cancelBtn = document.createElement('button');
+                    cancelBtn.className = "px-4 py-2 rounded-lg text-sm font-bold text-slate-400 hover:text-white hover:bg-slate-800 transition-colors";
+                    cancelBtn.innerText = "Cancel";
+                    cancelBtn.onclick = () => { closeModal(); resolve(false); };
+                    btnContainer.appendChild(cancelBtn);
+                }
+                
+                const confirmBtn = document.createElement('button');
+                const baseStyle = "px-4 py-2 rounded-lg text-sm font-bold text-white transition-colors shadow-lg ";
+                confirmBtn.className = baseStyle + (isDestructive ? "bg-rose-600 hover:bg-rose-500 shadow-[0_0_15px_rgba(225,29,72,0.3)]" : "bg-indigo-600 hover:bg-indigo-500 shadow-[0_0_15px_rgba(79,70,229,0.3)]");
+                confirmBtn.innerText = confirmBtnText;
+                confirmBtn.onclick = () => { closeModal(); resolve(true); };
+                btnContainer.appendChild(confirmBtn);
+
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    modalContent.classList.remove('scale-95');
+                }, 10);
+                lucide.createIcons();
+            });
+        }
+        const customConfirm = (title, msg, btnText, isDestructive) => showModal('confirm', title, msg, btnText, isDestructive);
+        const customAlert = (title, msg) => showModal('alert', title, msg, "OK", false);
+
+        // --- SUBMIT ORDER ---
+        document.getElementById('deliveryForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const orderData = {
+                pickup: document.getElementById('pickup').value,
+                dropoff: document.getElementById('dropoff').value,
+                item: document.getElementById('item').value,
+                phone: document.getElementById('phone').value,
+                price: parseInt(document.getElementById('offerPrice').value),
+                vendorId: loggedInUsername 
+            };
+
+            try {
+                const response = await fetch('/order', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(orderData)
+                });
+                if (response.ok) {
+                    document.getElementById('deliveryForm').reset();
+                    loadVendorOrders();
+                }
+            } catch (error) { customAlert("Error", "Network error."); }
+        });
+
+        // --- LOAD DASHBOARD ---
+        async function loadVendorOrders() {
+            if(!loggedInUsername) return; 
+            
+            try {
+                const response = await fetch('/orders');
+                const orders = await response.json();
+                const myPersonalOrders = orders.filter(order => order.vendorId === loggedInUsername);
+                const vendorTracking = document.getElementById('vendorTracking');
+                const myOrdersList = document.getElementById('myOrdersList');
+                const myHistoryList = document.getElementById('myHistoryList');
+
+                if (myPersonalOrders.length > 0) {
+                    vendorTracking.classList.remove('hidden');
+                    myOrdersList.innerHTML = ''; 
+                    myHistoryList.innerHTML = ''; 
+                    
+                    let hasActive = false;
+                    let hasHistory = false;
+                    
+                    myPersonalOrders.forEach(order => {
+                        let statusUI = "";
+                        let actionUI = "";
+                        let riderDedicatedUI = ""; // NEW: Dedicated Full-Width Rider Card
+
+                        if (order.status === "Pending Rider") {
+                            statusUI = `<p class="text-[10px] text-amber-500 font-mono mt-0.5 animate-pulse">PENDING...</p>`;
+                            actionUI = `<button onclick="cancelOrder('${order.id}')" class="text-xs text-rose-400 border border-rose-500/20 bg-rose-500/10 px-3 py-1.5 rounded-lg hover:bg-rose-500/20 transition-colors">Abort</button>`;
+                            hasActive = true;
+                        } 
+                        else if (order.status === "Counter-Offer") {
+                            statusUI = `<p class="text-[10px] text-orange-400 font-bold mt-1 uppercase animate-pulse">Rider asks for ₦${order.counterPrice}</p>`;
+                            actionUI = `
+                                <div class="flex flex-col sm:flex-row gap-2">
+                                    <button onclick="replyToCounter('${order.id}', true)" class="text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-4 py-2 rounded-lg shadow-[0_0_10px_rgba(16,185,129,0.3)] transition-all">Accept ₦${order.counterPrice}</button>
+                                    <button onclick="replyToCounter('${order.id}', false)" class="text-xs font-bold bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-400 px-4 py-2 rounded-lg transition-all">Decline</button>
+                                </div>
+                            `;
+                            
+                            // The Dedicated Rider Block for Negotiation
+                            riderDedicatedUI = `
+                                <div class="mt-4 pt-4 border-t border-slate-800/50">
+                                    <p class="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-semibold flex items-center gap-1"><i data-lucide="handshake" class="w-3 h-3"></i> Negotiating With</p>
+                                    <div class="flex items-center gap-4 bg-slate-900/80 p-3 rounded-xl border border-slate-700/50">
+                                        <img src="https://api.dicebear.com/7.x/initials/svg?seed=${order.riderName || 'Rider'}&backgroundColor=4f46e5" alt="avatar" class="w-12 h-12 rounded-full shadow-md border-2 border-slate-700">
+                                        <div>
+                                            <p class="text-sm font-bold text-white">${order.riderName || 'Unknown'}</p>
+                                            <p class="text-[10px] font-mono text-slate-400 mt-0.5"><i data-lucide="shield-check" class="w-3 h-3 inline text-indigo-400"></i> Plate: ${order.riderPlate || 'N/A'}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                            hasActive = true;
+                        }
+                        else if (order.status.includes("Accepted")) {
+                            statusUI = `<p class="text-[10px] text-cyan-400 font-mono mt-1"><i data-lucide="truck" class="w-3 h-3 inline"></i> EN ROUTE</p>`;
+                            actionUI = `<div class="flex flex-col items-end"><span class="text-xs text-slate-400 mb-1">Locked at</span><span class="text-xl text-cyan-400 font-black">₦${order.price}</span></div>`;
+                            
+                            // The Dedicated Massive Rider Block for En Route
+                            riderDedicatedUI = `
+                                <div class="mt-4 pt-4 border-t border-slate-800/50">
+                                    <p class="text-[10px] text-cyan-400 uppercase tracking-wider mb-3 font-bold flex items-center gap-1"><i data-lucide="shield-check" class="w-3 h-3"></i> Verified Dispatcher Secured</p>
+                                    <div class="flex items-center gap-4 bg-indigo-900/20 p-4 rounded-xl border border-indigo-500/30 shadow-inner">
+                                        <div class="relative">
+                                            <img src="https://api.dicebear.com/7.x/initials/svg?seed=${order.riderName || 'Rider'}&backgroundColor=4f46e5" alt="avatar" class="w-16 h-16 rounded-full shadow-[0_0_15px_rgba(79,70,229,0.4)] border-2 border-indigo-400">
+                                            <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full border-2 border-slate-900 flex items-center justify-center">
+                                                <i data-lucide="check" class="w-3 h-3 text-slate-950 font-bold"></i>
+                                            </div>
+                                        </div>
+                                        <div class="flex-1">
+                                            <p class="text-xl font-extrabold text-white tracking-tight">${order.riderName || 'Unknown'}</p>
+                                            <p class="text-xs font-mono text-slate-300 mt-1 bg-slate-950/50 inline-block px-2 py-0.5 rounded border border-slate-800">Plate: ${order.riderPlate || 'N/A'}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                            hasActive = true;
+                        }
+                        else if (order.status === "Delivered") {
+                            if (!knownDeliveries.includes(order.id)) {
+                                knownDeliveries.push(order.id);
+                                localStorage.setItem('qr_known_deliveries', JSON.stringify(knownDeliveries));
+                                
+                                const cModal = document.getElementById('celebrationModal');
+                                const cContent = document.getElementById('celebrationContent');
+                                document.getElementById('celebrationMessage').innerText = `Your ${order.item} was successfully handed over by ${order.riderName || 'the rider'}.`;
+                                
+                                cModal.classList.remove('hidden');
+                                setTimeout(() => {
+                                    cModal.classList.remove('opacity-0');
+                                    cContent.classList.remove('scale-90');
+                                }, 10);
+                                new Audio('https://actions.google.com/sounds/v1/water/water_drop.ogg').play().catch(e=>{});
+                            }
+
+                            statusUI = `<p class="text-[10px] text-emerald-400 font-mono mt-0.5"><i data-lucide="check-circle" class="w-3 h-3 inline"></i> DELIVERED</p>`;
+                            actionUI = `
+                                <div class="flex items-center gap-3">
+                                    <span class="text-xs text-emerald-400 font-bold bg-emerald-400/10 px-2 py-1 rounded">₦${order.price}</span>
+                                    <button onclick="deleteHistory('${order.id}')" class="text-slate-500 hover:text-rose-500 transition-colors p-2 bg-slate-900 rounded-full hover:bg-slate-800">
+                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            `;
+                            hasHistory = true;
+                        }
+
+                        // The structural update: Separating the top flexbox from the bottom dedicated UI
+                        const cardHTML = `
+                            <div class="bg-slate-950/60 border ${order.status === 'Counter-Offer' ? 'border-orange-500/50 shadow-[0_0_15px_rgba(249,115,22,0.1)]' : 'border-slate-800'} rounded-2xl p-5 opacity-95 hover:opacity-100 transition-opacity">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h3 class="text-base font-bold text-slate-200">${order.item}</h3>
+                                        ${statusUI}
+                                    </div>
+                                    ${actionUI}
+                                </div>
+                                ${riderDedicatedUI}
+                            </div>
+                        `;
+
+                        if (order.status === "Delivered") myHistoryList.innerHTML += cardHTML;
+                        else myOrdersList.innerHTML += cardHTML;
+                    });
+
+                    if (!hasActive) myOrdersList.innerHTML = `<div class="p-4 border border-slate-800/50 rounded-xl bg-slate-900/30 text-center"><p class="text-xs text-slate-500 italic">No active dispatches.</p></div>`;
+                    if (!hasHistory) myHistoryList.innerHTML = `<div class="p-4 border border-slate-800/50 rounded-xl bg-slate-900/30 text-center"><p class="text-xs text-slate-500 italic">No completed deliveries yet.</p></div>`;
+                    lucide.createIcons();
+                } else { 
+                    vendorTracking.classList.add('hidden'); 
+                }
+            } catch (error) {}
+        }
+
+        // --- ACTIONS ---
+        async function replyToCounter(jobId, accepted) {
+            await fetch('/vendor-response', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: jobId, accepted: accepted }) });
+            loadVendorOrders();
+        }
+
+        async function cancelOrder(jobId) {
+            const isSure = await customConfirm("Abort Dispatch?", "Are you sure you want to cancel this dispatch?", "Yes, Abort", true);
+            if(!isSure) return; 
+            await fetch('/cancel', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: jobId }) });
+            loadVendorOrders();
+        }
+
+        async function deleteHistory(jobId) {
+            const isSure = await customConfirm("Erase Record?", "Permanently delete this delivery receipt?", "Delete Record", true);
+            if(!isSure) return; 
+            await fetch('/delete-history', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: jobId }) });
+            loadVendorOrders();
+        }
+
+        // --- PWA SETUP ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration failed:', err));
+            });
+        }
+
+        // --- STARTUP ---
+        checkAuth();
+    </script>
+</body>
+</html>

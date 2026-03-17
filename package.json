@@ -1,0 +1,12 @@
+{
+  "name": "quickrider-mvp",
+  "version": "1.0.0",
+  "description": "Port Harcourt Logistics Engine",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
