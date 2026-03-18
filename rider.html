@@ -17,41 +17,44 @@
 
     <nav class="sticky top-0 z-50 bg-slate-950/80 backdrop-blur-md border-b border-white/10 p-4 hidden" id="riderNav">
         <div class="max-w-3xl mx-auto flex justify-between items-center">
-            <h1 class="text-xl font-bold flex items-center gap-2" id="navHeader">
-                <i data-lucide="radar" class="w-5 h-5 text-indigo-400 animate-pulse"></i> Live Board
-            </h1>
+            <h1 class="text-xl font-bold flex items-center gap-2" id="navHeader"></h1>
             <button onclick="logoutRider()" class="text-xs font-bold text-slate-500 hover:text-rose-400 flex items-center gap-1 transition-colors">
                 <i data-lucide="log-out" class="w-3 h-3"></i> Logout
             </button>
         </div>
     </nav>
 
+    <div id="kycPendingScreen" class="hidden max-w-md mx-auto p-6 mt-10 text-center animate-fade-in-up">
+        <div class="w-24 h-24 bg-amber-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-amber-500/30 shadow-[0_0_30px_rgba(245,158,11,0.2)]">
+            <i data-lucide="shield-alert" class="w-12 h-12 text-amber-500"></i>
+        </div>
+        <h2 class="text-2xl font-extrabold text-white mb-2 tracking-tight">Account Under Review</h2>
+        <p class="text-sm text-slate-400 mb-6 leading-relaxed">Your profile has been submitted. You cannot view the board until an Admin verifies your identity.</p>
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl text-left">
+            <p class="text-sm text-amber-500 flex items-center gap-2 animate-pulse mb-3"><i data-lucide="loader" class="w-4 h-4"></i> Awaiting Admin Approval...</p>
+            <p class="text-[10px] text-slate-500 italic">This screen will automatically unlock the moment you are approved. No need to refresh.</p>
+        </div>
+        <button onclick="logoutRider()" class="mt-8 text-sm text-slate-500 hover:text-white transition-colors border border-slate-800 px-4 py-2 rounded-lg">Sign Out / Start Fresh</button>
+    </div>
+
     <div class="max-w-3xl mx-auto p-4 md:p-8 mt-2 hidden" id="mainDashboard">
-        
         <div id="walletCard" class="mb-6 bg-gradient-to-br from-slate-900 to-indigo-950/50 border border-indigo-500/30 rounded-2xl p-6 shadow-[0_0_30px_rgba(79,70,229,0.1)] relative overflow-hidden transition-all duration-500">
             <i data-lucide="coins" class="absolute -right-4 -bottom-4 w-32 h-32 text-indigo-500/10 rotate-12"></i>
             <div class="relative z-10">
-                <p class="text-indigo-300 text-xs font-bold uppercase tracking-wider mb-1 flex items-center gap-2">
-                    <i data-lucide="wallet" class="w-4 h-4"></i> Today's Earnings
-                </p>
+                <p class="text-indigo-300 text-xs font-bold uppercase tracking-wider mb-1 flex items-center gap-2"><i data-lucide="wallet" class="w-4 h-4"></i> Today's Earnings</p>
                 <h2 class="text-4xl font-extrabold text-white tracking-tight">₦<span id="walletTotal">0</span></h2>
-                <p class="text-emerald-400 text-xs mt-2 font-mono bg-emerald-400/10 inline-block px-2 py-1 rounded border border-emerald-400/20" id="walletCount">
-                    0 drops completed
-                </p>
+                <p class="text-emerald-400 text-xs mt-2 font-mono bg-emerald-400/10 inline-block px-2 py-1 rounded border border-emerald-400/20" id="walletCount">0 drops completed</p>
             </div>
         </div>
-
         <div id="jobList" class="space-y-4"></div>
     </div>
 
     <div id="authModal" class="fixed inset-0 z-[300] bg-slate-950/95 backdrop-blur-md flex items-center justify-center">
         <div class="bg-slate-900 border border-slate-800 p-8 rounded-2xl shadow-2xl w-full max-w-sm h-full max-h-[90vh] overflow-y-auto">
             <div class="text-center mb-6 mt-4">
-                <div class="w-16 h-16 bg-emerald-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-emerald-500/20 transform rotate-6">
-                    <i data-lucide="bike" class="w-8 h-8 text-emerald-400"></i>
-                </div>
+                <img src="https://i.pinimg.com/736x/f9/24/e0/f924e0328e89eaa6c6022dfd7bec3ed6.jpg" alt="Logo" class="w-20 h-20 rounded-2xl object-cover mx-auto mb-6 border-2 border-slate-700">
                 <h2 class="text-2xl font-bold text-white">Dispatcher Access</h2>
-                <p class="text-xs text-slate-400 mt-2 leading-relaxed">Log in to view live payloads. If you don't have an account, fill out all fields to register.</p>
+                <p class="text-xs text-slate-400 mt-2 leading-relaxed">Existing riders log in at the top. New riders must complete the full KYC form below.</p>
             </div>
             
             <form id="authForm" class="space-y-4">
@@ -67,42 +70,53 @@
                 </div>
 
                 <div class="border-t border-slate-800/50 pt-4 mt-2">
-                    <p class="text-[10px] text-emerald-500/70 uppercase font-bold mb-3 tracking-wider">For New Registrations Only:</p>
-                    
+                    <p class="text-[10px] text-emerald-500/70 uppercase font-bold mb-3 tracking-wider flex items-center gap-1"><i data-lucide="shield" class="w-3 h-3"></i> KYC Registration (New Users)</p>
                     <div class="space-y-3">
                         <div>
                             <label class="text-[10px] font-semibold text-slate-400 uppercase">Full Name</label>
-                            <input type="text" id="authName" placeholder="e.g. Emmanuel O." class="w-full px-3 py-2 mt-1 bg-slate-950 border border-slate-800 rounded-lg text-white text-sm focus:border-emerald-500 focus:outline-none">
+                            <input type="text" id="authName" class="w-full px-3 py-2 mt-1 bg-slate-950 border border-slate-800 rounded-lg text-white text-sm focus:border-emerald-500 focus:outline-none">
                         </div>
-                        <div>
-                            <label class="text-[10px] font-semibold text-slate-400 uppercase">Bike Plate Number</label>
-                            <input type="text" id="authPlate" placeholder="e.g. PHC-123-XY" class="w-full px-3 py-2 mt-1 bg-slate-950 border border-slate-800 rounded-lg text-white text-sm focus:border-emerald-500 focus:outline-none uppercase">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-[10px] font-semibold text-slate-400 uppercase">Bike Plate</label>
+                                <input type="text" id="authPlate" class="w-full px-3 py-2 mt-1 bg-slate-950 border border-slate-800 rounded-lg text-white text-sm focus:border-emerald-500 focus:outline-none uppercase">
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-semibold text-slate-400 uppercase">Guarantor Phone</label>
+                                <input type="tel" id="authGuarantor" class="w-full px-3 py-2 mt-1 bg-slate-950 border border-slate-800 rounded-lg text-white text-sm focus:border-emerald-500 focus:outline-none">
+                            </div>
                         </div>
+                        
+                        <div class="grid grid-cols-2 gap-3 pt-2">
+                            <div>
+                                <label class="text-[10px] font-semibold text-slate-400 uppercase">Photo of You</label>
+                                <input type="file" id="authSelfie" accept="image/*" class="w-full mt-1 text-[10px] text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-[10px] file:font-semibold file:bg-slate-800 file:text-white hover:file:bg-slate-700">
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-semibold text-slate-400 uppercase">Photo of Bike</label>
+                                <input type="file" id="authBikePhoto" accept="image/*" class="w-full mt-1 text-[10px] text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-[10px] file:font-semibold file:bg-slate-800 file:text-white hover:file:bg-slate-700">
+                            </div>
+                        </div>
+
                     </div>
                 </div>
                 
                 <p id="authError" class="text-xs text-rose-500 font-bold hidden text-center mt-4"></p>
-
-                <button type="submit" id="authBtn" class="w-full mt-6 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold py-3 rounded-lg transition-colors shadow-[0_0_15px_rgba(16,185,129,0.3)]">
-                    Access Network
-                </button>
+                <button type="submit" id="authBtn" class="w-full mt-6 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold py-3 rounded-lg transition-colors shadow-[0_0_15px_rgba(16,185,129,0.3)]">Access Network</button>
             </form>
         </div>
     </div>
 
     <div id="qrModal" class="fixed inset-0 z-[100] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
         <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-2xl w-full max-w-sm transform scale-95 transition-all duration-300" id="qrModalContent">
-            <div class="flex items-center gap-2 mb-2">
-                <i data-lucide="zap" class="w-5 h-5 text-emerald-400"></i>
-                <h3 id="qrModalTitle" class="text-lg font-bold text-white">Negotiate Price</h3>
-            </div>
-            <p id="qrModalMessage" class="text-sm text-slate-400 mb-4">Enter your counter-offer.</p>
+            <div class="flex items-center gap-2 mb-2"><i data-lucide="zap" class="w-5 h-5 text-emerald-400"></i><h3 id="qrModalTitle" class="text-lg font-bold text-white">Negotiate Price</h3></div>
+            
+            <p id="qrModalMessage" class="text-sm text-slate-400 mb-4"></p>
             
             <div class="relative group">
                 <i data-lucide="wallet" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"></i>
                 <input type="number" id="qrModalInput" class="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-800 rounded-lg text-white font-bold focus:outline-none focus:border-emerald-500 transition-colors mb-6">
             </div>
-
             <div class="flex gap-3 justify-end">
                 <button id="qrModalCancel" class="px-4 py-2 rounded-lg text-sm font-bold text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">Cancel</button>
                 <button id="qrModalConfirm" class="px-4 py-2 rounded-lg text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-slate-950 transition-colors shadow-[0_0_15px_rgba(16,185,129,0.3)]">Send Offer</button>
@@ -112,65 +126,115 @@
 
     <script>
         lucide.createIcons();
-
-        // --- CORE VARIABLES ---
         let loggedInRider = localStorage.getItem('qr_rider_username');
         let riderProfile = JSON.parse(localStorage.getItem('quickrider_profile'));
         let refreshInterval;
+        let heartbeatInterval;
         let knownJobIds = new Set();
         const notificationSound = new Audio('https://actions.google.com/sounds/v1/alarms/glass_ping.ogg');
 
-        // Allow Notifications
-        if (Notification.permission !== "granted") Notification.requestPermission();
+        async function compressImage(file) {
+            return new Promise((resolve) => {
+                if (!file) return resolve(null);
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const MAX_WIDTH = 300; 
+                        const scaleSize = MAX_WIDTH / img.width;
+                        canvas.width = MAX_WIDTH;
+                        canvas.height = img.height * scaleSize;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        resolve(canvas.toDataURL('image/jpeg', 0.6)); 
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
 
-        // --- AUTHENTICATION ENGINE ---
+        async function checkVerificationHeartbeat() {
+            if (loggedInRider && riderProfile && riderProfile.verified === false) {
+                try {
+                    const res = await fetch('/rider/status?username=' + loggedInRider);
+                    const data = await res.json();
+                    if (data.verified === true) {
+                        riderProfile.verified = true;
+                        localStorage.setItem('quickrider_profile', JSON.stringify(riderProfile));
+                        checkAuth(); 
+                    }
+                } catch(e) {}
+            }
+        }
+
         function checkAuth() {
             if (loggedInRider && riderProfile) {
                 document.getElementById('authModal').classList.add('hidden');
-                document.getElementById('mainDashboard').classList.remove('hidden');
-                document.getElementById('riderNav').classList.remove('hidden');
                 
-                document.getElementById('navHeader').innerHTML = `<i data-lucide="radar" class="w-5 h-5 text-indigo-400 animate-pulse"></i> Live Board <span class="text-slate-500 ml-2 text-sm font-normal border-l border-slate-700 pl-2"><i data-lucide="user" class="w-3 h-3 inline mr-1"></i>${riderProfile.name}</span>`;
-                lucide.createIcons();
-                
-                loadJobs();
-                refreshInterval = setInterval(loadJobs, 3000);
+                if (riderProfile.verified === true) {
+                    document.getElementById('kycPendingScreen').classList.add('hidden');
+                    document.getElementById('mainDashboard').classList.remove('hidden');
+                    document.getElementById('riderNav').classList.remove('hidden');
+                    
+                    document.getElementById('navHeader').innerHTML = `<i data-lucide="radar" class="w-5 h-5 text-indigo-400 animate-pulse"></i> Live Board <span class="text-slate-500 ml-2 text-sm font-normal border-l border-slate-700 pl-2"><i data-lucide="shield-check" class="w-3 h-3 inline mr-1 text-emerald-500"></i>${riderProfile.name}</span>`;
+                    lucide.createIcons();
+                    
+                    loadJobs();
+                    if(!refreshInterval) refreshInterval = setInterval(loadJobs, 3000);
+                    if(heartbeatInterval) clearInterval(heartbeatInterval); 
+                } else {
+                    document.getElementById('mainDashboard').classList.add('hidden');
+                    document.getElementById('riderNav').classList.add('hidden');
+                    document.getElementById('kycPendingScreen').classList.remove('hidden');
+                    if(refreshInterval) clearInterval(refreshInterval);
+                    if(!heartbeatInterval) heartbeatInterval = setInterval(checkVerificationHeartbeat, 3000);
+                }
             } else {
                 document.getElementById('authModal').classList.remove('hidden');
                 document.getElementById('mainDashboard').classList.add('hidden');
                 document.getElementById('riderNav').classList.add('hidden');
+                document.getElementById('kycPendingScreen').classList.add('hidden');
                 if(refreshInterval) clearInterval(refreshInterval);
+                if(heartbeatInterval) clearInterval(heartbeatInterval);
             }
         }
 
         document.getElementById('authForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const user = document.getElementById('authUsername').value.trim();
+            const user = document.getElementById('authUsername').value.trim().toLowerCase();
             const pass = document.getElementById('authPassword').value;
             const name = document.getElementById('authName').value.trim();
             const plate = document.getElementById('authPlate').value.trim();
+            const guarantor = document.getElementById('authGuarantor').value.trim();
             
+            const selfieFile = document.getElementById('authSelfie').files[0];
+            const bikeFile = document.getElementById('authBikePhoto').files[0];
             const errorText = document.getElementById('authError');
             const btn = document.getElementById('authBtn');
 
-            btn.innerHTML = `<i data-lucide="loader" class="w-4 h-4 inline animate-spin"></i> Authenticating...`;
+            btn.innerHTML = `<i data-lucide="loader" class="w-4 h-4 inline animate-spin"></i> Processing...`;
 
             try {
+                const selfieData = await compressImage(selfieFile);
+                const bikeData = await compressImage(bikeFile);
+
                 const res = await fetch('/rider-auth', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: user, password: pass, name: name, plate: plate })
+                    body: JSON.stringify({ 
+                        username: user, password: pass, name: name, plate: plate, 
+                        guarantor: guarantor, selfie: selfieData, bikePhoto: bikeData 
+                    })
                 });
-                
                 const data = await res.json();
 
                 if (res.ok) {
-                    localStorage.setItem('qr_rider_username', user.toLowerCase());
+                    localStorage.setItem('qr_rider_username', user);
                     localStorage.setItem('quickrider_profile', JSON.stringify(data.profile));
-                    
-                    loggedInRider = user.toLowerCase();
+                    loggedInRider = user;
                     riderProfile = data.profile;
-                    
                     errorText.classList.add('hidden');
                     checkAuth();
                 } else {
@@ -178,7 +242,7 @@
                     errorText.classList.remove('hidden');
                 }
             } catch (err) {
-                errorText.innerText = "Network error. Is the server running?";
+                errorText.innerText = "Network error.";
                 errorText.classList.remove('hidden');
             }
             btn.innerText = "Access Network";
@@ -187,84 +251,66 @@
         function logoutRider() {
             localStorage.removeItem('qr_rider_username');
             localStorage.removeItem('quickrider_profile');
-            loggedInRider = null;
-            riderProfile = null;
-            
+            loggedInRider = null; riderProfile = null;
             document.getElementById('authUsername').value = '';
             document.getElementById('authPassword').value = '';
             checkAuth();
         }
 
-        // --- ALARM ENGINE ---
         function triggerAlarm(job) {
             notificationSound.play().catch(e => console.log("Sound blocked."));
-            if (Notification.permission === "granted") {
-                new Notification("🚨 New Payload: ₦" + job.price, {
-                    body: `Pickup: ${job.pickup} \nDropoff: ${job.dropoff}`,
-                    icon: "https://cdn-icons-png.flaticon.com/512/2830/2830305.png"
-                });
-            }
         }
 
-        // --- CUSTOM UI MODAL ENGINE ---
+        // The Custom Prompt Function that was crashing is now safe!
         function customPrompt(title, message, defaultValue) {
             return new Promise((resolve) => {
                 const modal = document.getElementById('qrModal');
                 const modalContent = document.getElementById('qrModalContent');
                 
                 document.getElementById('qrModalTitle').innerText = title;
+                // This is where it was failing previously:
                 document.getElementById('qrModalMessage').innerText = message;
+                
                 const input = document.getElementById('qrModalInput');
                 input.value = defaultValue;
                 
                 modal.classList.remove('hidden');
-                setTimeout(() => {
-                    modal.classList.remove('opacity-0');
-                    modalContent.classList.remove('scale-95');
+                setTimeout(() => { 
+                    modal.classList.remove('opacity-0'); 
+                    modalContent.classList.remove('scale-95'); 
                 }, 10);
                 
                 lucide.createIcons(); 
                 input.focus(); 
 
-                const closeModal = () => {
-                    modal.classList.add('opacity-0');
-                    modalContent.classList.add('scale-95');
-                    setTimeout(() => modal.classList.add('hidden'), 300);
+                const closeModal = () => { 
+                    modal.classList.add('opacity-0'); 
+                    modalContent.classList.add('scale-95'); 
+                    setTimeout(() => modal.classList.add('hidden'), 300); 
                 };
-
-                document.getElementById('qrModalConfirm').onclick = () => {
-                    resolve(input.value); 
-                    closeModal();
-                };
-
-                document.getElementById('qrModalCancel').onclick = () => {
-                    resolve(null); 
-                    closeModal();
-                };
+                
+                document.getElementById('qrModalConfirm').onclick = () => { resolve(input.value); closeModal(); };
+                document.getElementById('qrModalCancel').onclick = () => { resolve(null); closeModal(); };
             });
         }
 
-        // --- LOAD DASHBOARD & WALLET ---
         async function loadJobs() {
-            if (!riderProfile) return; 
+            if (!riderProfile || !riderProfile.verified) return; 
 
             const jobList = document.getElementById('jobList');
             try {
                 const response = await fetch('/orders');
                 const orders = await response.json();
                 
-                // WALLET ENGINE
                 const walletTotal = document.getElementById('walletTotal');
                 const walletCount = document.getElementById('walletCount');
                 const myCompletedJobs = orders.filter(order => order.riderPlate === riderProfile.plate && order.status === "Delivered");
                 
                 let totalEarnings = 0;
                 myCompletedJobs.forEach(job => totalEarnings += job.price);
-                
                 walletTotal.innerText = totalEarnings.toLocaleString();
                 walletCount.innerHTML = `<i data-lucide="check-circle-2" class="w-3 h-3 inline"></i> ${myCompletedJobs.length} drops completed`;
 
-                // ACTIVE JOBS FILTER
                 const myVisibleJobs = orders.filter(order => {
                     const isDelivered = order.status === "Delivered";
                     const isPending = order.status === "Pending Rider" || order.status === "Counter-Offer";
@@ -275,63 +321,48 @@
                 jobList.innerHTML = '';
                 if (myVisibleJobs.length === 0) {
                     jobList.innerHTML = `<p class="text-center text-slate-500 mt-10">No active payloads in your sector.</p>`;
-                    lucide.createIcons();
                     return;
                 }
 
                 myVisibleJobs.forEach(order => {
-                    // ALARMS
-                    if (order.status === "Pending Rider" && !knownJobIds.has(order.id)) {
-                        knownJobIds.add(order.id); 
-                        triggerAlarm(order);
-                    }
+                    if (order.status === "Pending Rider" && !knownJobIds.has(order.id)) { knownJobIds.add(order.id); triggerAlarm(order); }
 
                     const card = document.createElement('div');
                     card.className = "group bg-slate-900/60 border border-slate-800 rounded-xl p-5";
-                    
-                    let statusColor = "text-amber-400 bg-amber-400/10 border-amber-400/20";
-                    let actionButton = `
-                        <div class="flex gap-3 mt-5">
-                            <button onclick="acceptJob('${order.id}')" class="flex-1 bg-emerald-600/20 hover:bg-emerald-500 text-emerald-400 hover:text-slate-950 font-bold py-2.5 rounded-lg border border-emerald-500/50 transition-all">
-                                Accept ₦${order.price}
-                            </button>
-                            <button onclick="sendCounter('${order.id}', ${order.price})" class="flex-1 bg-slate-800 hover:bg-orange-600 text-white font-bold py-2.5 rounded-lg border border-slate-700 hover:border-orange-500 transition-all">
-                                Negotiate
-                            </button>
-                        </div>
-                    `;
+                    const safeItem = order.item ? order.item.replace(/'/g, "\\'") : '';
+                    const safeVendor = order.vendorId ? order.vendorId.replace(/'/g, "\\'") : '';
 
-                    if (order.status === "Counter-Offer") {
-                        statusColor = "text-orange-400 bg-orange-400/10 border-orange-400/20";
-                        actionButton = `<button disabled class="w-full mt-5 bg-slate-950 text-slate-500 border border-slate-800 font-medium py-2.5 rounded-lg cursor-not-allowed"><i data-lucide="loader" class="w-4 h-4 inline animate-spin"></i> Waiting for Vendor...</button>`;
-                    }
-                    else if(order.status.includes("Accepted")) {
-                        statusColor = "text-cyan-400 bg-cyan-400/10 border-cyan-400/20";
-                        
-                        let waPhone = order.phone;
-                        if (waPhone.startsWith('0')) waPhone = '234' + waPhone.substring(1);
+                    let actionButton = '';
 
+                    if (order.status === "Pending Rider") {
+                        actionButton = `
+                            <div class="flex gap-3 mt-5">
+                                <button onclick="acceptJob('${order.id}')" class="flex-1 bg-emerald-600/20 hover:bg-emerald-500 text-emerald-400 hover:text-slate-950 font-bold py-2.5 rounded-lg border border-emerald-500/50 transition-all shadow-[0_0_15px_rgba(16,185,129,0.1)] flex justify-center items-center gap-2">
+                                    <i data-lucide="zap" class="w-4 h-4"></i> Accept ₦${order.price}
+                                </button>
+                                <button onclick="sendCounter('${order.id}', ${order.price})" class="flex-1 bg-slate-800 hover:bg-orange-600 text-white font-bold py-2.5 rounded-lg border border-slate-700 hover:border-orange-500 transition-all">
+                                    Negotiate
+                                </button>
+                            </div>
+                        `;
+                    } 
+                    else if (order.status === "Counter-Offer" || order.status === "Awaiting Escrow") {
+                        actionButton = `<button disabled class="w-full mt-5 bg-slate-950 text-slate-500 border border-slate-800 font-medium py-2.5 rounded-lg cursor-not-allowed"><i data-lucide="loader" class="w-4 h-4 inline animate-spin"></i> Waiting for Vendor to Fund Escrow...</button>`;
+                    } 
+                    else if (order.status === "En Route") { 
+                        let waPhone = order.phone.startsWith('0') ? '234' + order.phone.substring(1) : order.phone;
                         actionButton = `
                             <div class="flex gap-2 mt-5">
-                                <a href="tel:${order.phone}" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-medium py-2.5 rounded-lg border border-slate-700 flex justify-center items-center transition-all">
-                                    <i data-lucide="phone" class="w-4 h-4"></i>
-                                </a>
-                                <a href="https://wa.me/${waPhone}" target="_blank" class="flex-1 bg-emerald-600/20 hover:bg-emerald-500 text-emerald-400 hover:text-slate-950 font-medium py-2.5 rounded-lg border border-emerald-500/50 flex justify-center items-center transition-all shadow-[0_0_15px_rgba(16,185,129,0.1)]">
-                                    <i data-lucide="message-circle" class="w-4 h-4"></i>
-                                </a>
-                                <button onclick="completeJob('${order.id}')" class="flex-[2] bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 rounded-lg transition-all shadow-[0_0_15px_rgba(79,70,229,0.4)] flex justify-center items-center gap-2">
-                                    <i data-lucide="package-check" class="w-4 h-4"></i> Delivered
-                                </button>
+                                <a href="tel:${order.phone}" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-medium py-2.5 rounded-lg border border-slate-700 flex justify-center items-center transition-all"><i data-lucide="phone" class="w-4 h-4"></i></a>
+                                <button onclick="triggerBot('${waPhone}', '${safeItem}', '${safeVendor}')" class="flex-1 bg-emerald-600/20 hover:bg-emerald-500 text-emerald-400 hover:text-slate-950 font-medium py-2.5 rounded-lg border border-emerald-500/50 flex justify-center items-center transition-all shadow-[0_0_15px_rgba(16,185,129,0.1)]"><i data-lucide="message-circle" class="w-4 h-4"></i></button>
+                                <button onclick="completeJob('${order.id}')" class="flex-[2] bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 rounded-lg transition-all flex justify-center items-center gap-2"><i data-lucide="package-check" class="w-4 h-4"></i> Delivered</button>
                             </div>
                         `;
                     }
 
                     card.innerHTML = `
                         <div class="flex justify-between items-start mb-4">
-                            <div>
-                                <h3 class="text-lg font-bold text-slate-100">${order.item}</h3>
-                                <span class="text-indigo-400 font-bold text-sm">Offer: ₦${order.price}</span>
-                            </div>
+                            <div><h3 class="text-lg font-bold text-slate-100">${order.item}</h3><span class="text-indigo-400 font-bold text-sm">Offer: ₦${order.price}</span></div>
                             <span class="text-[10px] font-bold px-2.5 py-1 rounded-md border uppercase">${order.status}</span>
                         </div>
                         <p class="text-sm text-slate-300 mb-1"><strong class="text-slate-500">Pickup:</strong> ${order.pickup}</p>
@@ -344,26 +375,22 @@
             } catch (error) {}
         }
 
-        // --- ACTIONS ---
         async function acceptJob(jobId) {
-            await fetch('/accept', { 
-                method: 'POST', 
-                headers: { 'Content-Type': 'application/json' }, 
-                body: JSON.stringify({ id: jobId, riderName: riderProfile.name, riderPlate: riderProfile.plate }) 
-            });
+            await fetch('/accept', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: jobId, riderName: riderProfile.name, riderPlate: riderProfile.plate }) });
             loadJobs();
         }
 
         async function sendCounter(jobId, currentPrice) {
-            let newPrice = await customPrompt("Counter Offer", `The vendor is currently offering ₦${currentPrice}. What is your required fee?`, currentPrice + 500);
+            let newPrice = await customPrompt("Counter Offer", `The current offer is ₦${currentPrice}. What is your required fee?`, currentPrice + 500);
             if (newPrice && !isNaN(newPrice)) {
-                await fetch('/counter', { 
-                    method: 'POST', 
-                    headers: { 'Content-Type': 'application/json' }, 
-                    body: JSON.stringify({ id: jobId, counterPrice: parseInt(newPrice), riderName: riderProfile.name, riderPlate: riderProfile.plate }) 
-                });
+                await fetch('/counter', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: jobId, counterPrice: parseInt(newPrice), riderName: riderProfile.name, riderPlate: riderProfile.plate }) });
                 loadJobs(); 
             }
+        }
+
+        function triggerBot(waPhone, item, vendorId) {
+            const botMessage = `🚨 *QuickRider Dispatch Update* 🚨%0A%0AHello! Your package (*${item}*) from *${vendorId}* has been paid for and is securely en route.%0A%0A🏍 *Dispatcher:* ${riderProfile.name}%0A🛡 *Bike Plate:* ${riderProfile.plate}`;
+            window.open(`https://wa.me/${waPhone}?text=${botMessage}`, '_blank');
         }
 
         async function completeJob(jobId) {
@@ -371,15 +398,10 @@
             loadJobs();
         }
 
-        // --- PWA SETUP ---
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration failed:', err));
-            });
-        }
-
-        // --- STARTUP ---
+        if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW failed')); }); }
+        
         checkAuth();
+        checkVerificationHeartbeat();
     </script>
 </body>
 </html>

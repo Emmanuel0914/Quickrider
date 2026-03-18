@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickRider - God Mode</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-slate-950 text-slate-50 min-h-screen selection:bg-rose-500/30 font-mono">
+
+    <div id="adminLogin" class="fixed inset-0 z-50 bg-slate-950 flex items-center justify-center">
+        <div class="w-full max-w-sm p-8 border border-rose-500/30 bg-slate-900/50 rounded-xl shadow-[0_0_50px_rgba(225,29,72,0.1)] text-center">
+            <i data-lucide="cpu" class="w-12 h-12 text-rose-500 mx-auto mb-4 animate-pulse"></i>
+            <h2 class="text-2xl font-bold text-white tracking-widest uppercase mb-6">System Override</h2>
+            <input type="password" id="masterPass" placeholder="Enter Master Key" class="w-full text-center px-4 py-3 bg-slate-950 border border-slate-800 rounded text-rose-400 focus:outline-none focus:border-rose-500 mb-4 tracking-widest">
+            <button onclick="attemptLogin()" class="w-full bg-rose-600 hover:bg-rose-500 text-white font-bold py-3 rounded uppercase tracking-widest transition-colors">Access Terminal</button>
+            <p id="loginError" class="text-xs text-rose-500 mt-4 hidden">ACCESS DENIED.</p>
+        </div>
+    </div>
+
+    <div id="adminDashboard" class="hidden max-w-6xl mx-auto p-6">
+        
+        <div class="flex justify-between items-center border-b border-slate-800 pb-4 mb-8">
+            <h1 class="text-2xl font-bold text-rose-500 flex items-center gap-3 tracking-widest uppercase">
+                <i data-lucide="radio-tower" class="w-6 h-6 animate-ping absolute opacity-20"></i>
+                <i data-lucide="radio-tower" class="w-6 h-6"></i> Command Center
+            </h1>
+            <button onclick="location.reload()" class="text-xs text-slate-400 hover:text-white border border-slate-800 px-3 py-1 rounded">Disconnect</button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-slate-900 border border-slate-800 p-4 rounded-lg border-l-4 border-l-cyan-500">
+                <p class="text-xs text-slate-500 uppercase">Total Payloads</p>
+                <h3 class="text-3xl font-bold text-white" id="statOrders">0</h3>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 p-4 rounded-lg border-l-4 border-l-emerald-500">
+                <p class="text-xs text-slate-500 uppercase">Total Economy (₦)</p>
+                <h3 class="text-3xl font-bold text-white" id="statMoney">0</h3>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 p-4 rounded-lg border-l-4 border-l-indigo-500">
+                <p class="text-xs text-slate-500 uppercase">Active Vendors</p>
+                <h3 class="text-3xl font-bold text-white" id="statVendors">0</h3>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 p-4 rounded-lg border-l-4 border-l-amber-500">
+                <p class="text-xs text-slate-500 uppercase">Verified Dispatchers</p>
+                <h3 class="text-3xl font-bold text-white" id="statRiders">0</h3>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            
+            <div class="bg-slate-900 border border-slate-800 rounded-lg p-5">
+                <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2 border-b border-slate-800 pb-2">
+                    <i data-lucide="activity" class="w-4 h-4 text-cyan-500"></i> Network Traffic
+                </h2>
+                <div class="space-y-3 h-[600px] overflow-y-auto pr-2" id="orderFeed"></div>
+            </div>
+
+            <div class="space-y-8">
+                <div class="bg-slate-900 border border-slate-800 rounded-lg p-5">
+                    <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2 border-b border-slate-800 pb-2">
+                        <i data-lucide="shield-check" class="w-4 h-4 text-emerald-500"></i> KYC Vault / Dispatchers
+                    </h2>
+                    <div class="space-y-3 max-h-[400px] overflow-y-auto pr-2" id="riderFeed"></div>
+                </div>
+
+                <div class="bg-slate-900 border border-slate-800 rounded-lg p-5">
+                    <h2 class="text-lg font-bold text-white mb-4 flex items-center gap-2 border-b border-slate-800 pb-2">
+                        <i data-lucide="package" class="w-4 h-4 text-indigo-500"></i> Registered Vendors
+                    </h2>
+                    <div class="space-y-2 max-h-[150px] overflow-y-auto pr-2" id="vendorFeed"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        let globalData = {};
+
+        async function attemptLogin() {
+            const pass = document.getElementById('masterPass').value;
+            const res = await fetch('/admin-auth', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password: pass })
+            });
+            
+            if (res.ok) {
+                document.getElementById('adminLogin').classList.add('hidden');
+                document.getElementById('adminDashboard').classList.remove('hidden');
+                fetchMasterData();
+                setInterval(fetchMasterData, 5000); 
+            } else {
+                document.getElementById('loginError').classList.remove('hidden');
+            }
+        }
+
+        async function fetchMasterData() {
+            const res = await fetch('/admin-data');
+            globalData = await res.json();
+            renderDashboard();
+        }
+
+        function renderDashboard() {
+            const { orders, vendors, riders } = globalData;
+
+            document.getElementById('statOrders').innerText = orders.length;
+            // 🚨 UPGRADE: Calculate TRULY Active Vendors
+            const activeVendorIds = new Set();
+            orders.forEach(o => {
+                // If the order is NOT delivered, the vendor is currently active
+                if (o.status !== 'Delivered') {
+                    activeVendorIds.add(o.vendorId);
+                }
+            });
+            document.getElementById('statVendors').innerText = activeVendorIds.size;
+            document.getElementById('statRiders').innerText = riders.filter(r => r.verified).length;
+            
+            let totalMoney = 0;
+            orders.forEach(o => totalMoney += o.price);
+            document.getElementById('statMoney').innerText = totalMoney.toLocaleString();
+
+            const orderFeed = document.getElementById('orderFeed');
+            orderFeed.innerHTML = '';
+            orders.slice().reverse().forEach(o => {
+                let statusColor = o.status === 'Delivered' ? 'text-emerald-500' : 'text-amber-500';
+                orderFeed.innerHTML += `
+                    <div class="bg-slate-950 p-3 rounded border border-slate-800 flex justify-between items-center group">
+                        <div>
+                            <p class="text-sm font-bold text-white">${o.item} <span class="text-xs text-slate-500 font-normal ml-2">(${o.pickup} ➔ ${o.dropoff})</span></p>
+                            <p class="text-xs mt-1"><span class="${statusColor} uppercase">${o.status}</span> | ₦${o.price} | Vendor: ${o.vendorId}</p>
+                        </div>
+                        <button onclick="deleteOrder('${o.id}')" class="text-slate-600 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <i data-lucide="trash" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                `;
+            });
+
+            const riderFeed = document.getElementById('riderFeed');
+            riderFeed.innerHTML = '';
+            riders.sort((a, b) => (a.verified === b.verified) ? 0 : a.verified ? 1 : -1).forEach(r => {
+                
+                let kycStatus = r.verified 
+                    ? `<span class="text-[10px] text-emerald-500 border border-emerald-500/30 bg-emerald-500/10 px-1.5 py-0.5 rounded ml-2">Verified</span>` 
+                    : `<span class="text-[10px] text-amber-500 border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.5 rounded ml-2 animate-pulse">Pending Review</span>`;
+
+                let actionButton = r.verified
+                    ? `<button onclick="banUser('${r.username}', 'rider')" class="text-[10px] bg-rose-500/10 text-rose-500 border border-rose-500/30 px-2 py-1 rounded hover:bg-rose-500 hover:text-white transition-colors">Ban</button>`
+                    : `<div class="flex flex-col gap-2">
+                        <button onclick="verifyRider('${r.username}')" class="text-[10px] bg-emerald-600 text-slate-950 font-bold px-3 py-2 rounded hover:bg-emerald-500 transition-colors">Approve Account</button>
+                        <button onclick="banUser('${r.username}', 'rider')" class="text-[10px] bg-rose-500/10 text-rose-500 border border-rose-500/30 px-2 py-1 rounded hover:bg-rose-500 hover:text-white transition-colors">Reject / Ban</button>
+                       </div>`;
+
+                // NEW: Image Display Logic
+                let imagesHTML = '';
+                if (r.selfie || r.bikePhoto) {
+                    imagesHTML = `
+                    <div class="flex gap-2 mt-3 pt-3 border-t border-slate-800">
+                        ${r.selfie ? `<div><p class="text-[8px] text-slate-500 uppercase mb-1">Selfie</p><img src="${r.selfie}" class="w-16 h-16 object-cover rounded border border-slate-700"></div>` : ''}
+                        ${r.bikePhoto ? `<div><p class="text-[8px] text-slate-500 uppercase mb-1">Bike</p><img src="${r.bikePhoto}" class="w-16 h-16 object-cover rounded border border-slate-700"></div>` : ''}
+                    </div>`;
+                }
+
+                riderFeed.innerHTML += `
+                    <div class="flex justify-between items-start bg-slate-950 p-4 border ${r.verified ? 'border-slate-800' : 'border-amber-500/50 shadow-[0_0_10px_rgba(245,158,11,0.1)]'} rounded mb-3">
+                        <div class="flex-1 pr-4">
+                            <p class="text-xs text-slate-300 mb-1"><strong class="text-white text-sm">${r.username}</strong> ${kycStatus}</p>
+                            <p class="text-[10px] text-slate-400">Name: <span class="text-white">${r.name}</span></p>
+                            <p class="text-[10px] text-slate-400">Plate: <span class="text-white">${r.plate}</span></p>
+                            <p class="text-[10px] text-slate-400">Guarantor: <span class="text-white">${r.guarantor || 'N/A'}</span></p>
+                            ${imagesHTML}
+                        </div>
+                        <div class="mt-1">
+                            ${actionButton}
+                        </div>
+                    </div>
+                `;
+            });
+
+            const vendorFeed = document.getElementById('vendorFeed');
+            vendorFeed.innerHTML = '';
+            vendors.forEach(v => {
+                vendorFeed.innerHTML += `
+                    <div class="flex justify-between items-center bg-slate-950 p-2 border border-slate-800 rounded">
+                        <p class="text-xs text-slate-300"><strong class="text-white">${v.username}</strong></p>
+                        <button onclick="banUser('${v.username}', 'vendor')" class="text-[10px] bg-rose-500/10 text-rose-500 border border-rose-500/30 px-2 py-1 rounded hover:bg-rose-500 hover:text-white transition-colors">Ban</button>
+                    </div>
+                `;
+            });
+
+            lucide.createIcons();
+        }
+
+        async function verifyRider(username) {
+            if(confirm(`Approve ${username} and grant access to the live dispatch board?`)) {
+                await fetch('/admin-verify-rider', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username }) });
+                fetchMasterData();
+            }
+        }
+
+        async function banUser(username, role) {
+            if(confirm(`WARNING: Eradicate ${role} ${username} from the network?`)) {
+                await fetch('/admin-ban', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, role }) });
+                fetchMasterData();
+            }
+        }
+
+        async function deleteOrder(id) {
+            if(confirm('Delete this payload from the database?')) {
+                await fetch('/admin-delete-order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) });
+                fetchMasterData();
+            }
+        }
+    </script>
+</body>
+</html>
