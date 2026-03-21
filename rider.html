@@ -4,123 +4,126 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QuickRider - Dispatch Board</title>
-    
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#4f46e5">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
+    </style>
 </head>
-<body class="bg-slate-950 text-slate-50 min-h-screen selection:bg-cyan-500/30">
+<body class="bg-slate-950 text-slate-50 min-h-screen selection:bg-emerald-500/30">
 
     <nav class="sticky top-0 z-50 bg-slate-950/80 backdrop-blur-md border-b border-white/10 p-4 hidden" id="riderNav">
         <div class="max-w-3xl mx-auto flex justify-between items-center">
             <h1 class="text-xl font-bold flex items-center gap-2" id="navHeader"></h1>
-            <button onclick="logoutRider()" class="text-xs font-bold text-slate-500 hover:text-rose-400 flex items-center gap-1 transition-colors">
-                <i data-lucide="log-out" class="w-3 h-3"></i> Logout
-            </button>
+            <button onclick="logoutRider()" class="text-xs font-bold text-slate-500 hover:text-rose-400 flex items-center gap-1 transition-colors"><i data-lucide="log-out" class="w-3 h-3"></i> Logout</button>
         </div>
     </nav>
 
-    <div id="kycPendingScreen" class="hidden max-w-md mx-auto p-6 mt-10 text-center animate-fade-in-up">
-        <div class="w-24 h-24 bg-amber-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-amber-500/30 shadow-[0_0_30px_rgba(245,158,11,0.2)]">
-            <i data-lucide="shield-alert" class="w-12 h-12 text-amber-500"></i>
+    <div id="kycPendingScreen" class="hidden max-w-md mx-auto p-6 mt-16 text-center animate-fade-in-up">
+        <div class="w-28 h-28 bg-amber-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border-4 border-amber-500/20 shadow-[0_0_30px_rgba(245,158,11,0.15)] relative">
+            <i data-lucide="shield-alert" class="w-12 h-12 text-amber-500 animate-pulse"></i>
+            <div class="absolute top-0 right-0 w-6 h-6 bg-slate-950 rounded-full flex items-center justify-center"><div class="w-3 h-3 bg-amber-500 rounded-full animate-ping"></div></div>
         </div>
-        <h2 class="text-2xl font-extrabold text-white mb-2 tracking-tight">Account Under Review</h2>
-        <p class="text-sm text-slate-400 mb-6 leading-relaxed">Your profile has been submitted. You cannot view the board until an Admin verifies your identity.</p>
-        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl text-left">
-            <p class="text-sm text-amber-500 flex items-center gap-2 animate-pulse mb-3"><i data-lucide="loader" class="w-4 h-4"></i> Awaiting Admin Approval...</p>
-            <p class="text-[10px] text-slate-500 italic">This screen will automatically unlock the moment you are approved. No need to refresh.</p>
-        </div>
-        <button onclick="logoutRider()" class="mt-8 text-sm text-slate-500 hover:text-white transition-colors border border-slate-800 px-4 py-2 rounded-lg">Sign Out / Start Fresh</button>
+        <h2 class="text-3xl font-extrabold text-white mb-3 tracking-tight">Under Review</h2>
+        <p class="text-slate-400 mb-8 leading-relaxed">Your profile and documents have been secured. We are currently verifying your credentials.</p>
+        <button onclick="logoutRider()" class="text-sm font-bold text-slate-400 border border-slate-800 px-6 py-3 rounded-xl hover:bg-slate-900 hover:text-white transition-all">Sign Out</button>
     </div>
 
     <div class="max-w-3xl mx-auto p-4 md:p-8 mt-2 hidden" id="mainDashboard">
-        <div id="walletCard" class="mb-6 bg-gradient-to-br from-slate-900 to-indigo-950/50 border border-indigo-500/30 rounded-2xl p-6 shadow-[0_0_30px_rgba(79,70,229,0.1)] relative overflow-hidden transition-all duration-500">
-            <i data-lucide="coins" class="absolute -right-4 -bottom-4 w-32 h-32 text-indigo-500/10 rotate-12"></i>
-            <div class="relative z-10">
-                <p class="text-indigo-300 text-xs font-bold uppercase tracking-wider mb-1 flex items-center gap-2"><i data-lucide="wallet" class="w-4 h-4"></i> Today's Earnings</p>
-                <h2 class="text-4xl font-extrabold text-white tracking-tight">₦<span id="walletTotal">0</span></h2>
-                <p class="text-emerald-400 text-xs mt-2 font-mono bg-emerald-400/10 inline-block px-2 py-1 rounded border border-emerald-400/20" id="walletCount">0 drops completed</p>
+        <div class="mb-8 bg-gradient-to-br from-slate-900 to-indigo-950/50 border border-indigo-500/30 rounded-3xl p-8 relative overflow-hidden shadow-2xl">
+            <i data-lucide="coins" class="absolute -right-4 -bottom-4 w-40 h-40 text-indigo-500/10 rotate-12"></i>
+            <div class="relative z-10 flex justify-between items-end">
+                <div>
+                    <p class="text-indigo-300 text-xs font-bold uppercase tracking-widest mb-2 flex items-center gap-1"><i data-lucide="wallet" class="w-4 h-4"></i> Total Earnings</p>
+                    <h2 class="text-5xl font-extrabold text-white tracking-tight">₦<span id="walletTotal">0</span></h2>
+                </div>
+                <div class="text-right">
+                    <p class="text-amber-400 text-sm font-bold bg-amber-400/10 px-3 py-1.5 rounded-lg border border-amber-400/20 shadow-inner"><i data-lucide="star" class="w-4 h-4 inline fill-amber-400"></i> <span id="riderRating">0.0</span></p>
+                    <p class="text-emerald-400 text-xs mt-3 font-mono bg-emerald-400/10 px-3 py-1.5 rounded-lg border border-emerald-400/20" id="walletCount">0 drops</p>
+                </div>
             </div>
         </div>
-        <div id="jobList" class="space-y-4"></div>
+        <div id="jobList" class="space-y-5"></div>
     </div>
 
-    <div id="authModal" class="fixed inset-0 z-[300] bg-slate-950/95 backdrop-blur-md flex items-center justify-center">
-        <div class="bg-slate-900 border border-slate-800 p-8 rounded-2xl shadow-2xl w-full max-w-sm h-full max-h-[90vh] overflow-y-auto">
-            <div class="text-center mb-6 mt-4">
-                <img src="https://i.pinimg.com/736x/f9/24/e0/f924e0328e89eaa6c6022dfd7bec3ed6.jpg" alt="Logo" class="w-20 h-20 rounded-2xl object-cover mx-auto mb-6 border-2 border-slate-700">
-                <h2 class="text-2xl font-bold text-white">Dispatcher Access</h2>
-                <p class="text-xs text-slate-400 mt-2 leading-relaxed">Existing riders log in at the top. New riders must complete the full KYC form below.</p>
+    <div id="authModal" class="fixed inset-0 z-[300] bg-slate-950/95 backdrop-blur-xl flex items-center justify-center p-4">
+        <div class="bg-slate-900/80 border border-slate-800 p-6 sm:p-10 rounded-[2rem] shadow-2xl w-full max-w-md h-auto max-h-[95vh] overflow-y-auto custom-scrollbar relative">
+            <div class="text-center mb-8">
+                <div class="w-20 h-20 bg-gradient-to-br from-emerald-500/20 to-teal-500/10 rounded-[1.5rem] flex items-center justify-center mx-auto mb-5 border border-emerald-500/30 shadow-[0_0_25px_rgba(16,185,129,0.15)] transform rotate-3"><i data-lucide="bike" class="w-10 h-10 text-emerald-400 -rotate-3"></i></div>
+                <h2 class="text-3xl font-black text-white tracking-tight">Dispatcher HQ</h2>
+                <p class="text-sm text-slate-400 mt-2">Log in or register to enter the network.</p>
             </div>
-            
-            <form id="authForm" class="space-y-4">
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="text-[10px] font-semibold text-slate-400 uppercase">Username</label>
-                        <input type="text" id="authUsername" class="w-full px-3 py-2 mt-1 bg-slate-950 border border-slate-800 rounded-lg text-white text-sm focus:border-emerald-500 focus:outline-none" required>
-                    </div>
-                    <div>
-                        <label class="text-[10px] font-semibold text-slate-400 uppercase">Password</label>
-                        <input type="password" id="authPassword" class="w-full px-3 py-2 mt-1 bg-slate-950 border border-slate-800 rounded-lg text-white text-sm focus:border-emerald-500 focus:outline-none" required>
+            <form id="authForm" class="space-y-6">
+                <div class="space-y-4">
+                    <div class="relative group"><i data-lucide="user" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-emerald-400 transition-colors"></i><input type="text" id="authUsername" placeholder="Username" class="w-full pl-12 pr-4 py-4 bg-slate-950/50 border border-slate-800 rounded-2xl text-white text-sm focus:outline-none focus:border-emerald-500 focus:bg-slate-950 transition-all shadow-inner" required></div>
+                    <div class="relative group"><i data-lucide="lock" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-emerald-400 transition-colors"></i><input type="password" id="authPassword" placeholder="Password" class="w-full pl-12 pr-4 py-4 bg-slate-950/50 border border-slate-800 rounded-2xl text-white text-sm focus:outline-none focus:border-emerald-500 focus:bg-slate-950 transition-all shadow-inner" required></div>
+                </div>
+                <div class="border-t border-slate-800/80 pt-8 mt-4 relative">
+                    <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-slate-900 px-4 py-1 text-[10px] text-emerald-500 font-bold uppercase tracking-widest flex items-center gap-1 border border-slate-800 rounded-full shadow-lg"><i data-lucide="shield-check" class="w-3 h-3"></i> New Rider Setup</div>
+                    <div class="space-y-5 mt-2">
+                        <div class="flex justify-center mb-6">
+                            <label class="relative cursor-pointer group">
+                                <div id="profilePreview" class="w-28 h-28 rounded-full bg-slate-950 border-2 border-dashed border-slate-700 group-hover:border-emerald-500 flex flex-col items-center justify-center overflow-hidden transition-all shadow-lg group-hover:shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+                                    <i data-lucide="camera" class="w-8 h-8 text-slate-500 group-hover:text-emerald-400 mb-1 transition-colors"></i><span class="text-[10px] font-bold text-slate-500 group-hover:text-emerald-400 uppercase tracking-wider">Profile Pic</span>
+                                </div>
+                                <input type="file" id="authSelfie" accept="image/*" class="hidden" onchange="previewImage(event, 'profilePreview')">
+                                <div class="absolute bottom-0 right-0 bg-emerald-500 p-2 rounded-full border-4 border-slate-900 hidden group-hover:block transition-all"><i data-lucide="upload" class="w-3 h-3 text-slate-950"></i></div>
+                            </label>
+                        </div>
+                        <div class="space-y-4">
+                            <input type="text" id="authName" placeholder="Legal Full Name" class="w-full px-4 py-4 bg-slate-950/50 border border-slate-800 rounded-2xl text-white text-sm focus:outline-none focus:border-emerald-500 focus:bg-slate-950 transition-all">
+                            <div class="grid grid-cols-2 gap-4"><input type="text" id="authPlate" placeholder="Bike Plate NO." class="w-full px-4 py-4 bg-slate-950/50 border border-slate-800 rounded-2xl text-white text-sm uppercase focus:outline-none focus:border-emerald-500 focus:bg-slate-950 transition-all"><input type="tel" id="authGuarantor" placeholder="Guarantor Phone" class="w-full px-4 py-4 bg-slate-950/50 border border-slate-800 rounded-2xl text-white text-sm focus:outline-none focus:border-emerald-500 focus:bg-slate-950 transition-all"></div>
+                        </div>
+                        <label class="flex flex-col items-center justify-center w-full p-6 bg-slate-950/30 border-2 border-dashed border-slate-700 rounded-2xl cursor-pointer hover:border-emerald-500 hover:bg-slate-900/50 transition-all group relative overflow-hidden mt-2">
+                            <div id="bikePreview" class="absolute inset-0 bg-cover bg-center opacity-0 transition-opacity"></div>
+                            <div class="relative z-10 flex flex-col items-center bg-slate-900/60 p-2 rounded-xl backdrop-blur-sm"><i data-lucide="image-plus" class="w-6 h-6 text-slate-400 group-hover:text-emerald-400 mb-2 transition-colors"></i><span class="text-xs font-bold text-slate-300 group-hover:text-white transition-colors tracking-wide">Upload Bike Photo</span></div>
+                            <input type="file" id="authBikePhoto" accept="image/*" class="hidden" onchange="previewImage(event, 'bikePreview', true)">
+                        </label>
                     </div>
                 </div>
-
-                <div class="border-t border-slate-800/50 pt-4 mt-2">
-                    <p class="text-[10px] text-emerald-500/70 uppercase font-bold mb-3 tracking-wider flex items-center gap-1"><i data-lucide="shield" class="w-3 h-3"></i> KYC Registration (New Users)</p>
-                    <div class="space-y-3">
-                        <div>
-                            <label class="text-[10px] font-semibold text-slate-400 uppercase">Full Name</label>
-                            <input type="text" id="authName" class="w-full px-3 py-2 mt-1 bg-slate-950 border border-slate-800 rounded-lg text-white text-sm focus:border-emerald-500 focus:outline-none">
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="text-[10px] font-semibold text-slate-400 uppercase">Bike Plate</label>
-                                <input type="text" id="authPlate" class="w-full px-3 py-2 mt-1 bg-slate-950 border border-slate-800 rounded-lg text-white text-sm focus:border-emerald-500 focus:outline-none uppercase">
-                            </div>
-                            <div>
-                                <label class="text-[10px] font-semibold text-slate-400 uppercase">Guarantor Phone</label>
-                                <input type="tel" id="authGuarantor" class="w-full px-3 py-2 mt-1 bg-slate-950 border border-slate-800 rounded-lg text-white text-sm focus:border-emerald-500 focus:outline-none">
-                            </div>
-                        </div>
-                        
-                        <div class="grid grid-cols-2 gap-3 pt-2">
-                            <div>
-                                <label class="text-[10px] font-semibold text-slate-400 uppercase">Photo of You</label>
-                                <input type="file" id="authSelfie" accept="image/*" class="w-full mt-1 text-[10px] text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-[10px] file:font-semibold file:bg-slate-800 file:text-white hover:file:bg-slate-700">
-                            </div>
-                            <div>
-                                <label class="text-[10px] font-semibold text-slate-400 uppercase">Photo of Bike</label>
-                                <input type="file" id="authBikePhoto" accept="image/*" class="w-full mt-1 text-[10px] text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-[10px] file:font-semibold file:bg-slate-800 file:text-white hover:file:bg-slate-700">
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-                
-                <p id="authError" class="text-xs text-rose-500 font-bold hidden text-center mt-4"></p>
-                <button type="submit" id="authBtn" class="w-full mt-6 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold py-3 rounded-lg transition-colors shadow-[0_0_15px_rgba(16,185,129,0.3)]">Access Network</button>
+                <p id="authError" class="text-xs text-rose-500 font-bold hidden text-center bg-rose-500/10 py-3 rounded-xl border border-rose-500/20 mt-4"></p>
+                <button type="submit" id="authBtn" class="w-full mt-8 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 py-4.5 rounded-2xl text-slate-950 text-base font-black shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-all transform hover:-translate-y-1">Login & Enter Network</button>
             </form>
         </div>
     </div>
 
-    <div id="qrModal" class="fixed inset-0 z-[100] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
-        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-2xl w-full max-w-sm transform scale-95 transition-all duration-300" id="qrModalContent">
-            <div class="flex items-center gap-2 mb-2"><i data-lucide="zap" class="w-5 h-5 text-emerald-400"></i><h3 id="qrModalTitle" class="text-lg font-bold text-white">Negotiate Price</h3></div>
-            
-            <p id="qrModalMessage" class="text-sm text-slate-400 mb-4"></p>
-            
-            <div class="relative group">
-                <i data-lucide="wallet" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"></i>
-                <input type="number" id="qrModalInput" class="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-800 rounded-lg text-white font-bold focus:outline-none focus:border-emerald-500 transition-colors mb-6">
+    <div id="etaModal" class="fixed inset-0 z-[200] bg-slate-950/90 backdrop-blur-md flex items-center justify-center hidden opacity-0 transition-opacity">
+        <div class="bg-slate-900 border border-slate-800 p-8 rounded-3xl w-full max-w-sm text-center shadow-2xl">
+            <h3 class="text-xl font-bold text-white mb-2">Arrival Time</h3><p class="text-xs text-slate-400 mb-8">The vendor will see this countdown. Do not be late.</p>
+            <div class="grid grid-cols-3 gap-4 mb-8"><button onclick="confirmAccept(15)" class="py-5 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl text-emerald-400 font-bold hover:bg-emerald-500 hover:text-white transition-all shadow-lg hover:shadow-emerald-500/20">15m</button><button onclick="confirmAccept(30)" class="py-5 bg-amber-500/10 border border-amber-500/30 rounded-2xl text-amber-400 font-bold hover:bg-amber-500 hover:text-white transition-all shadow-lg hover:shadow-amber-500/20">30m</button><button onclick="confirmAccept(45)" class="py-5 bg-rose-500/10 border border-rose-500/30 rounded-2xl text-rose-400 font-bold hover:bg-rose-500 hover:text-white transition-all shadow-lg hover:shadow-rose-500/20">45m</button></div>
+            <button onclick="closeEta()" class="text-slate-500 text-sm font-bold hover:text-white transition-colors">Cancel</button>
+        </div>
+    </div>
+
+    <div id="qrModal" class="fixed inset-0 z-[100] bg-slate-950/80 backdrop-blur-md flex items-center justify-center hidden opacity-0 transition-opacity">
+        <div class="bg-slate-900 border border-slate-800 p-8 rounded-3xl shadow-2xl w-full max-w-sm"><h3 id="qrModalTitle" class="text-xl font-bold text-white mb-2">Negotiate Price</h3><p id="qrModalMessage" class="text-sm text-slate-400 mb-6"></p><input type="number" id="qrModalInput" class="w-full px-5 py-4 bg-slate-950 border border-slate-800 rounded-xl text-white font-bold mb-8 focus:outline-none focus:border-emerald-500 text-lg"><div class="flex gap-4 justify-end"><button id="qrModalCancel" class="px-5 py-3 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 transition-colors">Cancel</button><button id="qrModalConfirm" class="px-5 py-3 rounded-xl text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-slate-950 shadow-lg transition-colors">Send Offer</button></div></div>
+    </div>
+
+    <div id="podModal" class="fixed inset-0 z-[200] bg-slate-950/90 backdrop-blur-md flex items-center justify-center hidden opacity-0 transition-opacity">
+        <div class="bg-slate-900 border border-slate-800 p-8 rounded-3xl shadow-2xl w-full max-w-sm text-center">
+            <div class="w-20 h-20 bg-indigo-500/20 rounded-full flex items-center justify-center mx-auto mb-5 border border-indigo-500/50 shadow-[0_0_20px_rgba(79,70,229,0.3)]">
+                <i data-lucide="shield-check" class="w-10 h-10 text-indigo-400"></i>
             </div>
-            <div class="flex gap-3 justify-end">
-                <button id="qrModalCancel" class="px-4 py-2 rounded-lg text-sm font-bold text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">Cancel</button>
-                <button id="qrModalConfirm" class="px-4 py-2 rounded-lg text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-slate-950 transition-colors shadow-[0_0_15px_rgba(16,185,129,0.3)]">Send Offer</button>
+            <h3 class="text-2xl font-bold text-white mb-2">Verify Handover</h3>
+            <p class="text-sm text-slate-400 mb-6 leading-relaxed">Ask the receiver for the 4-digit PIN and snap a photo to release your funds.</p>
+
+            <input type="text" id="deliveryPinInput" placeholder="PIN" maxlength="4" class="w-full text-center tracking-[1em] py-4 bg-slate-950/50 border border-slate-800 rounded-2xl text-indigo-400 text-2xl font-black mb-5 focus:outline-none focus:border-indigo-500 shadow-inner transition-all">
+
+            <div class="relative overflow-hidden group mb-6">
+                <label class="flex flex-col items-center justify-center p-4 bg-slate-950/30 border-2 border-dashed border-slate-700 rounded-2xl cursor-pointer hover:border-indigo-500 hover:bg-slate-900/50 transition-all">
+                    <i data-lucide="camera" class="w-6 h-6 text-slate-400 group-hover:text-indigo-400 mb-2 transition-colors"></i>
+                    <span id="podFileName" class="text-xs font-bold text-slate-300 group-hover:text-white transition-colors">Snap or Upload Photo</span>
+                    <input type="file" id="podPhoto" accept="image/*" class="hidden" onchange="document.getElementById('podFileName').innerText = 'Photo Ready ✓'; document.getElementById('podFileName').classList.add('text-emerald-400');">
+                </label>
             </div>
+
+            <p id="podError" class="text-xs text-rose-500 font-bold hidden mb-4 bg-rose-500/10 py-3 rounded-xl border border-rose-500/20"></p>
+
+            <button id="submitPodBtn" onclick="submitPod()" class="w-full bg-indigo-600 hover:bg-indigo-500 py-4 rounded-xl text-white font-bold transition-all mb-4 shadow-lg text-lg">Verify & Complete</button>
+            <button onclick="closePodModal()" class="text-slate-500 text-sm font-bold hover:text-white transition-colors">Cancel</button>
         </div>
     </div>
 
@@ -128,43 +131,38 @@
         lucide.createIcons();
         let loggedInRider = localStorage.getItem('qr_rider_username');
         let riderProfile = JSON.parse(localStorage.getItem('quickrider_profile'));
-        let refreshInterval;
-        let heartbeatInterval;
-        let knownJobIds = new Set();
-        const notificationSound = new Audio('https://actions.google.com/sounds/v1/alarms/glass_ping.ogg');
+        let refreshInterval, heartbeatInterval;
+        let pendingJobIdForEta = null;
+        let activeJobIdForPod = null; 
+
+        function previewImage(event, elementId, isBackground = false) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const el = document.getElementById(elementId);
+                    if (isBackground) { el.style.backgroundImage = `url(${e.target.result})`; el.classList.remove('opacity-0'); el.classList.add('opacity-40'); } 
+                    else { el.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover rounded-full">`; el.classList.remove('border-dashed', 'border-slate-700'); el.classList.add('border-emerald-500'); }
+                }
+                reader.readAsDataURL(file);
+            }
+        }
 
         async function compressImage(file) {
             return new Promise((resolve) => {
                 if (!file) return resolve(null);
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        const MAX_WIDTH = 300; 
-                        const scaleSize = MAX_WIDTH / img.width;
-                        canvas.width = MAX_WIDTH;
-                        canvas.height = img.height * scaleSize;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                        resolve(canvas.toDataURL('image/jpeg', 0.6)); 
-                    };
-                    img.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
+                    const img = new Image(); img.onload = () => { const canvas = document.createElement('canvas'); const scale = 400 / img.width; canvas.width = 400; canvas.height = img.height * scale; const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, canvas.width, canvas.height); resolve(canvas.toDataURL('image/jpeg', 0.6)); }; img.src = e.target.result;
+                }; reader.readAsDataURL(file);
             });
         }
 
         async function checkVerificationHeartbeat() {
-            if (loggedInRider && riderProfile && riderProfile.verified === false) {
+            if (loggedInRider && riderProfile && !riderProfile.verified) {
                 try {
-                    const res = await fetch('/rider/status?username=' + loggedInRider);
-                    const data = await res.json();
-                    if (data.verified === true) {
-                        riderProfile.verified = true;
-                        localStorage.setItem('quickrider_profile', JSON.stringify(riderProfile));
-                        checkAuth(); 
-                    }
+                    const res = await fetch('/rider/status?username=' + loggedInRider); const data = await res.json();
+                    if (data.verified) { riderProfile.verified = true; localStorage.setItem('quickrider_profile', JSON.stringify(riderProfile)); checkAuth(); }
                 } catch(e) {}
             }
         }
@@ -172,236 +170,128 @@
         function checkAuth() {
             if (loggedInRider && riderProfile) {
                 document.getElementById('authModal').classList.add('hidden');
-                
-                if (riderProfile.verified === true) {
-                    document.getElementById('kycPendingScreen').classList.add('hidden');
-                    document.getElementById('mainDashboard').classList.remove('hidden');
-                    document.getElementById('riderNav').classList.remove('hidden');
-                    
-                    document.getElementById('navHeader').innerHTML = `<i data-lucide="radar" class="w-5 h-5 text-indigo-400 animate-pulse"></i> Live Board <span class="text-slate-500 ml-2 text-sm font-normal border-l border-slate-700 pl-2"><i data-lucide="shield-check" class="w-3 h-3 inline mr-1 text-emerald-500"></i>${riderProfile.name}</span>`;
-                    lucide.createIcons();
-                    
-                    loadJobs();
-                    if(!refreshInterval) refreshInterval = setInterval(loadJobs, 3000);
-                    if(heartbeatInterval) clearInterval(heartbeatInterval); 
+                if (riderProfile.verified) {
+                    document.getElementById('kycPendingScreen').classList.add('hidden'); document.getElementById('mainDashboard').classList.remove('hidden'); document.getElementById('riderNav').classList.remove('hidden'); document.getElementById('navHeader').innerHTML = `<i data-lucide="radar" class="w-5 h-5 text-indigo-400 animate-pulse"></i> Live Board <span class="text-slate-500 ml-2 text-sm font-normal border-l border-slate-800 pl-2">${riderProfile.name}</span>`;
+                    lucide.createIcons(); loadJobs();
+                    if(!refreshInterval) refreshInterval = setInterval(loadJobs, 3000); if(heartbeatInterval) clearInterval(heartbeatInterval); 
                 } else {
-                    document.getElementById('mainDashboard').classList.add('hidden');
-                    document.getElementById('riderNav').classList.add('hidden');
-                    document.getElementById('kycPendingScreen').classList.remove('hidden');
-                    if(refreshInterval) clearInterval(refreshInterval);
-                    if(!heartbeatInterval) heartbeatInterval = setInterval(checkVerificationHeartbeat, 3000);
+                    document.getElementById('mainDashboard').classList.add('hidden'); document.getElementById('riderNav').classList.add('hidden'); document.getElementById('kycPendingScreen').classList.remove('hidden');
+                    if(refreshInterval) clearInterval(refreshInterval); if(!heartbeatInterval) heartbeatInterval = setInterval(checkVerificationHeartbeat, 3000);
                 }
-            } else {
-                document.getElementById('authModal').classList.remove('hidden');
-                document.getElementById('mainDashboard').classList.add('hidden');
-                document.getElementById('riderNav').classList.add('hidden');
-                document.getElementById('kycPendingScreen').classList.add('hidden');
-                if(refreshInterval) clearInterval(refreshInterval);
-                if(heartbeatInterval) clearInterval(heartbeatInterval);
-            }
+            } else { document.getElementById('authModal').classList.remove('hidden'); document.getElementById('mainDashboard').classList.add('hidden'); document.getElementById('riderNav').classList.add('hidden'); document.getElementById('kycPendingScreen').classList.add('hidden'); }
         }
 
         document.getElementById('authForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const user = document.getElementById('authUsername').value.trim().toLowerCase();
-            const pass = document.getElementById('authPassword').value;
-            const name = document.getElementById('authName').value.trim();
-            const plate = document.getElementById('authPlate').value.trim();
-            const guarantor = document.getElementById('authGuarantor').value.trim();
-            
-            const selfieFile = document.getElementById('authSelfie').files[0];
-            const bikeFile = document.getElementById('authBikePhoto').files[0];
-            const errorText = document.getElementById('authError');
-            const btn = document.getElementById('authBtn');
-
-            btn.innerHTML = `<i data-lucide="loader" class="w-4 h-4 inline animate-spin"></i> Processing...`;
+            const user = document.getElementById('authUsername').value.trim().toLowerCase(); const pass = document.getElementById('authPassword').value;
+            const btn = document.getElementById('authBtn'); const errorText = document.getElementById('authError');
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 inline animate-spin"></i> Processing...`; errorText.classList.add('hidden');
 
             try {
-                const selfieData = await compressImage(selfieFile);
-                const bikeData = await compressImage(bikeFile);
+                const selfieData = await compressImage(document.getElementById('authSelfie').files[0]); const bikeData = await compressImage(document.getElementById('authBikePhoto').files[0]);
+                const payload = { username: user, password: pass, name: document.getElementById('authName').value.trim(), plate: document.getElementById('authPlate').value.trim(), guarantor: document.getElementById('authGuarantor').value.trim(), selfie: selfieData, bikePhoto: bikeData };
+                const res = await fetch('/rider-auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }); const data = await res.json();
 
-                const res = await fetch('/rider-auth', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        username: user, password: pass, name: name, plate: plate, 
-                        guarantor: guarantor, selfie: selfieData, bikePhoto: bikeData 
-                    })
-                });
-                const data = await res.json();
-
-                if (res.ok) {
-                    localStorage.setItem('qr_rider_username', user);
-                    localStorage.setItem('quickrider_profile', JSON.stringify(data.profile));
-                    loggedInRider = user;
-                    riderProfile = data.profile;
-                    errorText.classList.add('hidden');
-                    checkAuth();
-                } else {
-                    errorText.innerText = data.message;
-                    errorText.classList.remove('hidden');
-                }
-            } catch (err) {
-                errorText.innerText = "Network error.";
-                errorText.classList.remove('hidden');
-            }
-            btn.innerText = "Access Network";
+                if (res.ok) { localStorage.setItem('qr_rider_username', user); localStorage.setItem('quickrider_profile', JSON.stringify(data.profile)); loggedInRider = user; riderProfile = data.profile; checkAuth(); } 
+                else { errorText.innerText = data.message; errorText.classList.remove('hidden'); }
+            } catch (err) { errorText.innerText = "Network Error."; errorText.classList.remove('hidden'); }
+            btn.innerText = "Login & Enter Network"; lucide.createIcons();
         });
 
-        function logoutRider() {
-            localStorage.removeItem('qr_rider_username');
-            localStorage.removeItem('quickrider_profile');
-            loggedInRider = null; riderProfile = null;
-            document.getElementById('authUsername').value = '';
-            document.getElementById('authPassword').value = '';
-            checkAuth();
-        }
+        function logoutRider() { localStorage.removeItem('qr_rider_username'); localStorage.removeItem('quickrider_profile'); loggedInRider = null; riderProfile = null; checkAuth(); }
 
-        function triggerAlarm(job) {
-            notificationSound.play().catch(e => console.log("Sound blocked."));
-        }
-
-        // The Custom Prompt Function that was crashing is now safe!
         function customPrompt(title, message, defaultValue) {
             return new Promise((resolve) => {
-                const modal = document.getElementById('qrModal');
-                const modalContent = document.getElementById('qrModalContent');
-                
-                document.getElementById('qrModalTitle').innerText = title;
-                // This is where it was failing previously:
-                document.getElementById('qrModalMessage').innerText = message;
-                
-                const input = document.getElementById('qrModalInput');
-                input.value = defaultValue;
-                
-                modal.classList.remove('hidden');
-                setTimeout(() => { 
-                    modal.classList.remove('opacity-0'); 
-                    modalContent.classList.remove('scale-95'); 
-                }, 10);
-                
-                lucide.createIcons(); 
-                input.focus(); 
-
-                const closeModal = () => { 
-                    modal.classList.add('opacity-0'); 
-                    modalContent.classList.add('scale-95'); 
-                    setTimeout(() => modal.classList.add('hidden'), 300); 
-                };
-                
-                document.getElementById('qrModalConfirm').onclick = () => { resolve(input.value); closeModal(); };
-                document.getElementById('qrModalCancel').onclick = () => { resolve(null); closeModal(); };
+                const modal = document.getElementById('qrModal'); document.getElementById('qrModalTitle').innerText = title; document.getElementById('qrModalMessage').innerText = message; document.getElementById('qrModalInput').value = defaultValue;
+                modal.classList.remove('hidden'); setTimeout(() => modal.classList.remove('opacity-0'), 10);
+                const closeModal = () => { modal.classList.add('opacity-0'); setTimeout(() => modal.classList.add('hidden'), 300); };
+                document.getElementById('qrModalConfirm').onclick = () => { resolve(document.getElementById('qrModalInput').value); closeModal(); }; document.getElementById('qrModalCancel').onclick = () => { resolve(null); closeModal(); };
             });
+        }
+
+        function openEta(jobId) { pendingJobIdForEta = jobId; const modal = document.getElementById('etaModal'); modal.classList.remove('hidden'); setTimeout(() => modal.classList.remove('opacity-0'), 10); }
+        function closeEta() { document.getElementById('etaModal').classList.add('opacity-0'); setTimeout(() => document.getElementById('etaModal').classList.add('hidden'), 300); pendingJobIdForEta = null; }
+        async function confirmAccept(mins) { await fetch('/accept', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: pendingJobIdForEta, riderName: riderProfile.name, riderPlate: riderProfile.plate, eta: mins }) }); closeEta(); loadJobs(); }
+
+        // 🚨 UPDATED PIN HANDLER
+        function openPodModal(jobId) {
+            activeJobIdForPod = jobId; 
+            document.getElementById('podPhoto').value = ""; 
+            document.getElementById('podFileName').innerText = "Take Delivery Photo";
+            document.getElementById('podFileName').classList.remove('text-emerald-400');
+            document.getElementById('deliveryPinInput').value = "";
+            document.getElementById('podError').classList.add('hidden');
+            document.getElementById('submitPodBtn').innerText = "Verify & Complete";
+            const modal = document.getElementById('podModal'); modal.classList.remove('hidden'); setTimeout(() => modal.classList.remove('opacity-0'), 10);
+        }
+        function closePodModal() { document.getElementById('podModal').classList.add('opacity-0'); setTimeout(() => document.getElementById('podModal').classList.add('hidden'), 300); activeJobIdForPod = null; }
+
+        async function submitPod() {
+            const fileInput = document.getElementById('podPhoto').files[0];
+            const pinInput = document.getElementById('deliveryPinInput').value.trim();
+            const err = document.getElementById('podError');
+
+            if (pinInput.length !== 4) { err.innerText = "Please enter the 4-digit Handover PIN."; err.classList.remove('hidden'); return; }
+            if (!fileInput) { err.innerText = "You must take a delivery photo."; err.classList.remove('hidden'); return; }
+
+            const btn = document.getElementById('submitPodBtn'); btn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 inline animate-spin"></i> Verifying...`; lucide.createIcons();
+            err.classList.add('hidden');
+
+            const compressedPhoto = await compressImage(fileInput);
+
+            try {
+                const res = await fetch('/complete', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: activeJobIdForPod, podImage: compressedPhoto, submittedPin: pinInput }) });
+                if (res.ok) { closePodModal(); loadJobs(); } 
+                else { const data = await res.json(); err.innerText = data.message; err.classList.remove('hidden'); btn.innerText = "Verify & Complete"; }
+            } catch (error) { err.innerText = "Network Error."; err.classList.remove('hidden'); btn.innerText = "Verify & Complete"; }
         }
 
         async function loadJobs() {
             if (!riderProfile || !riderProfile.verified) return; 
-
-            const jobList = document.getElementById('jobList');
             try {
-                const response = await fetch('/orders');
-                const orders = await response.json();
-                
-                const walletTotal = document.getElementById('walletTotal');
-                const walletCount = document.getElementById('walletCount');
-                const myCompletedJobs = orders.filter(order => order.riderPlate === riderProfile.plate && order.status === "Delivered");
-                
-                let totalEarnings = 0;
-                myCompletedJobs.forEach(job => totalEarnings += job.price);
-                walletTotal.innerText = totalEarnings.toLocaleString();
-                walletCount.innerHTML = `<i data-lucide="check-circle-2" class="w-3 h-3 inline"></i> ${myCompletedJobs.length} drops completed`;
+                const response = await fetch('/orders'); const orders = await response.json();
+                const profileRes = await fetch('/admin-data'); const allData = await profileRes.json();
+                const freshProfile = allData.riders.find(r => r.plate === riderProfile.plate);
+                if(freshProfile) { document.getElementById('riderRating').innerText = freshProfile.avgRating || '0.0'; }
 
-                const myVisibleJobs = orders.filter(order => {
-                    const isDelivered = order.status === "Delivered";
-                    const isPending = order.status === "Pending Rider" || order.status === "Counter-Offer";
-                    const isMyJob = order.riderPlate === riderProfile.plate;
-                    return !isDelivered && (isPending || isMyJob);
-                });
+                let totalEarnings = 0; const myCompletedJobs = orders.filter(o => o.riderPlate === riderProfile.plate && (o.status === "Delivered" || o.status === "Archived"));
+                myCompletedJobs.forEach(job => totalEarnings += job.price);
+                
+                document.getElementById('walletTotal').innerText = totalEarnings.toLocaleString();
+                document.getElementById('walletCount').innerHTML = `<i data-lucide="check-circle-2" class="w-3 h-3 inline"></i> ${myCompletedJobs.length} drops`;
+
+                const jobList = document.getElementById('jobList');
+                const myVisibleJobs = orders.filter(o => { const isArchived = o.status === "Archived" || o.status === "Delivered"; const isPending = o.status === "Pending Rider" || o.status === "Counter-Offer"; return !isArchived && (isPending || o.riderPlate === riderProfile.plate); });
 
                 jobList.innerHTML = '';
-                if (myVisibleJobs.length === 0) {
-                    jobList.innerHTML = `<p class="text-center text-slate-500 mt-10">No active payloads in your sector.</p>`;
-                    return;
-                }
+                if (myVisibleJobs.length === 0) { jobList.innerHTML = `<p class="text-center text-slate-500 mt-12 mb-12 flex flex-col items-center"><i data-lucide="inbox" class="w-10 h-10 mb-2 text-slate-700"></i> No active payloads in your area.</p>`; lucide.createIcons(); return; }
 
                 myVisibleJobs.forEach(order => {
-                    if (order.status === "Pending Rider" && !knownJobIds.has(order.id)) { knownJobIds.add(order.id); triggerAlarm(order); }
-
-                    const card = document.createElement('div');
-                    card.className = "group bg-slate-900/60 border border-slate-800 rounded-xl p-5";
-                    const safeItem = order.item ? order.item.replace(/'/g, "\\'") : '';
-                    const safeVendor = order.vendorId ? order.vendorId.replace(/'/g, "\\'") : '';
-
+                    const card = document.createElement('div'); card.className = "bg-slate-900/60 border border-slate-800 rounded-3xl p-6 shadow-lg transition-all hover:border-slate-700";
                     let actionButton = '';
 
                     if (order.status === "Pending Rider") {
-                        actionButton = `
-                            <div class="flex gap-3 mt-5">
-                                <button onclick="acceptJob('${order.id}')" class="flex-1 bg-emerald-600/20 hover:bg-emerald-500 text-emerald-400 hover:text-slate-950 font-bold py-2.5 rounded-lg border border-emerald-500/50 transition-all shadow-[0_0_15px_rgba(16,185,129,0.1)] flex justify-center items-center gap-2">
-                                    <i data-lucide="zap" class="w-4 h-4"></i> Accept ₦${order.price}
-                                </button>
-                                <button onclick="sendCounter('${order.id}', ${order.price})" class="flex-1 bg-slate-800 hover:bg-orange-600 text-white font-bold py-2.5 rounded-lg border border-slate-700 hover:border-orange-500 transition-all">
-                                    Negotiate
-                                </button>
-                            </div>
-                        `;
+                        actionButton = `<div class="flex gap-3 mt-6"><button onclick="openEta('${order.id}')" class="flex-1 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 font-bold py-3.5 rounded-xl border border-emerald-500/50 transition-colors shadow-inner">Accept ₦${order.price}</button><button onclick="sendCounter('${order.id}', ${order.price})" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-bold py-3.5 rounded-xl border border-slate-700 transition-colors shadow-inner">Negotiate</button></div>`;
                     } 
                     else if (order.status === "Counter-Offer" || order.status === "Awaiting Escrow") {
-                        actionButton = `<button disabled class="w-full mt-5 bg-slate-950 text-slate-500 border border-slate-800 font-medium py-2.5 rounded-lg cursor-not-allowed"><i data-lucide="loader" class="w-4 h-4 inline animate-spin"></i> Waiting for Vendor to Fund Escrow...</button>`;
+                        actionButton = `<button disabled class="w-full mt-6 bg-slate-950 text-slate-500 border border-slate-800 py-3.5 rounded-xl font-bold">Waiting for Vendor Escrow...</button>`;
                     } 
                     else if (order.status === "En Route") { 
                         let waPhone = order.phone.startsWith('0') ? '234' + order.phone.substring(1) : order.phone;
-                        actionButton = `
-                            <div class="flex gap-2 mt-5">
-                                <a href="tel:${order.phone}" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-medium py-2.5 rounded-lg border border-slate-700 flex justify-center items-center transition-all"><i data-lucide="phone" class="w-4 h-4"></i></a>
-                                <button onclick="triggerBot('${waPhone}', '${safeItem}', '${safeVendor}')" class="flex-1 bg-emerald-600/20 hover:bg-emerald-500 text-emerald-400 hover:text-slate-950 font-medium py-2.5 rounded-lg border border-emerald-500/50 flex justify-center items-center transition-all shadow-[0_0_15px_rgba(16,185,129,0.1)]"><i data-lucide="message-circle" class="w-4 h-4"></i></button>
-                                <button onclick="completeJob('${order.id}')" class="flex-[2] bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 rounded-lg transition-all flex justify-center items-center gap-2"><i data-lucide="package-check" class="w-4 h-4"></i> Delivered</button>
-                            </div>
-                        `;
+                        actionButton = `<div class="flex gap-2 mt-6"><a href="tel:${order.phone}" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-3.5 rounded-xl flex justify-center items-center transition-colors shadow-inner"><i data-lucide="phone" class="w-5 h-5"></i></a><button onclick="triggerBot('${waPhone}', \`${order.item}\`, \`${order.vendorId}\`)" class="flex-1 bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-400 py-3.5 rounded-xl flex justify-center items-center transition-colors shadow-inner"><i data-lucide="message-circle" class="w-5 h-5"></i></button><button onclick="openPodModal('${order.id}')" class="flex-[2] bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-xl flex justify-center items-center gap-2 shadow-[0_0_20px_rgba(79,70,229,0.3)] transition-colors"><i data-lucide="shield-check" class="w-5 h-5"></i> Complete</button></div>`;
                     }
 
-                    card.innerHTML = `
-                        <div class="flex justify-between items-start mb-4">
-                            <div><h3 class="text-lg font-bold text-slate-100">${order.item}</h3><span class="text-indigo-400 font-bold text-sm">Offer: ₦${order.price}</span></div>
-                            <span class="text-[10px] font-bold px-2.5 py-1 rounded-md border uppercase">${order.status}</span>
-                        </div>
-                        <p class="text-sm text-slate-300 mb-1"><strong class="text-slate-500">Pickup:</strong> ${order.pickup}</p>
-                        <p class="text-sm text-slate-300"><strong class="text-slate-500">Dropoff:</strong> ${order.dropoff}</p>
-                        ${actionButton}
-                    `;
+                    card.innerHTML = `<div class="flex justify-between items-start mb-5"><div><h3 class="text-xl font-bold text-slate-100">${order.item}</h3><span class="text-indigo-400 font-black text-sm">₦${order.price}</span></div><span class="text-[10px] font-bold px-3 py-1.5 rounded-lg border uppercase tracking-wider">${order.status}</span></div><div class="space-y-2 bg-slate-950/50 p-4 rounded-xl border border-slate-800/50"><p class="text-sm text-slate-300 flex items-start gap-2"><i data-lucide="map-pin" class="w-4 h-4 text-slate-500 shrink-0 mt-0.5"></i> <span><strong class="text-slate-500 block text-[10px] uppercase">Pickup</strong> ${order.pickup}</span></p><p class="text-sm text-slate-300 flex items-start gap-2"><i data-lucide="navigation" class="w-4 h-4 text-slate-500 shrink-0 mt-0.5"></i> <span><strong class="text-slate-500 block text-[10px] uppercase">Dropoff</strong> ${order.dropoff}</span></p></div>${actionButton}`;
                     jobList.appendChild(card);
                 });
                 lucide.createIcons();
             } catch (error) {}
         }
 
-        async function acceptJob(jobId) {
-            await fetch('/accept', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: jobId, riderName: riderProfile.name, riderPlate: riderProfile.plate }) });
-            loadJobs();
-        }
+        async function sendCounter(jobId, currentPrice) { let newPrice = await customPrompt("Counter Offer", `Current offer is ₦${currentPrice}. Your required fee?`, currentPrice + 500); if (newPrice && !isNaN(newPrice)) { await fetch('/counter', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: jobId, counterPrice: parseInt(newPrice), riderName: riderProfile.name, riderPlate: riderProfile.plate }) }); loadJobs(); } }
+        function triggerBot(waPhone, rawItem, rawVendor) { window.open(`https://wa.me/${waPhone}?text=%F0%9F%9A%A8+*QuickRider+Update*+%F0%9F%9A%A8%0A%0AHello!+Your+package+(*${encodeURIComponent(rawItem)}*)+from+*${encodeURIComponent(rawVendor)}*+is+securely+en+route.%0A%0A%F0%9F%8F%8D+*Dispatcher:*+${encodeURIComponent(riderProfile.name)}`, '_blank'); }
 
-        async function sendCounter(jobId, currentPrice) {
-            let newPrice = await customPrompt("Counter Offer", `The current offer is ₦${currentPrice}. What is your required fee?`, currentPrice + 500);
-            if (newPrice && !isNaN(newPrice)) {
-                await fetch('/counter', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: jobId, counterPrice: parseInt(newPrice), riderName: riderProfile.name, riderPlate: riderProfile.plate }) });
-                loadJobs(); 
-            }
-        }
-
-        function triggerBot(waPhone, item, vendorId) {
-            const botMessage = `🚨 *QuickRider Dispatch Update* 🚨%0A%0AHello! Your package (*${item}*) from *${vendorId}* has been paid for and is securely en route.%0A%0A🏍 *Dispatcher:* ${riderProfile.name}%0A🛡 *Bike Plate:* ${riderProfile.plate}`;
-            window.open(`https://wa.me/${waPhone}?text=${botMessage}`, '_blank');
-        }
-
-        async function completeJob(jobId) {
-            await fetch('/complete', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: jobId }) });
-            loadJobs();
-        }
-
-        if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW failed')); }); }
-        
-        checkAuth();
-        checkVerificationHeartbeat();
+        checkAuth(); checkVerificationHeartbeat();
     </script>
 </body>
 </html>

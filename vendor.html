@@ -4,84 +4,124 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QuickRider - Vendor Portal</title>
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#4f46e5">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://js.paystack.co/v1/inline.js"></script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+    </style>
 </head>
-<body class="bg-slate-950 text-slate-50 min-h-screen flex flex-col items-center py-10 px-4 selection:bg-indigo-500/30">
+<body class="bg-slate-950 text-slate-50 min-h-screen flex flex-col items-center py-10 px-4 sm:px-8 selection:bg-indigo-500/30">
 
-    <div class="w-full max-w-md flex justify-end mb-2 hidden" id="vendorNav">
-        <button onclick="logoutVendor()" class="text-xs font-bold text-slate-500 hover:text-rose-400 flex items-center gap-1 transition-colors"><i data-lucide="log-out" class="w-3 h-3"></i> Logout</button>
+    <div class="w-full max-w-4xl flex justify-end mb-4 hidden" id="vendorNav">
+        <button onclick="logoutVendor()" class="text-xs font-bold text-slate-500 hover:text-rose-400 flex items-center gap-1 transition-colors bg-slate-900 px-4 py-2 rounded-full border border-slate-800"><i data-lucide="log-out" class="w-3 h-3"></i> Logout</button>
     </div>
 
-    <div class="w-full max-w-md bg-slate-900/50 backdrop-blur-xl border border-white/10 p-8 rounded-2xl shadow-2xl relative overflow-hidden hidden" id="mainDashboard">
-        <div class="text-center mb-8 relative z-10">
-            <h2 class="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent mb-1">QuickRider</h2>
-            <p class="text-indigo-400 text-xs font-bold uppercase tracking-widest" id="welcomeText">Vendor Portal</p>
+    <div class="w-full max-w-4xl flex flex-col lg:flex-row gap-8 relative z-10 hidden" id="mainDashboard">
+        
+        <div class="w-full lg:w-1/3 shrink-0">
+            <div class="bg-slate-900/50 backdrop-blur-xl border border-white/10 p-8 rounded-[2rem] shadow-2xl sticky top-8">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent mb-1">QuickRider</h2>
+                    <p class="text-indigo-400 text-[10px] font-black uppercase tracking-widest" id="welcomeText">Vendor Portal</p>
+                </div>
+
+                <form id="deliveryForm" class="space-y-5">
+                    <div class="space-y-1"><label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Pickup Address</label><div class="relative group"><i data-lucide="map-pin" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"></i><input type="text" id="pickup" class="w-full pl-11 pr-4 py-3.5 bg-slate-950/50 border border-slate-800 rounded-xl text-sm focus:outline-none focus:border-indigo-500/50 transition-all" required></div></div>
+                    <div class="space-y-1"><label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Drop-off Address</label><div class="relative group"><i data-lucide="navigation" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"></i><input type="text" id="dropoff" class="w-full pl-11 pr-4 py-3.5 bg-slate-950/50 border border-slate-800 rounded-xl text-sm focus:outline-none focus:border-indigo-500/50 transition-all" required></div></div>
+                    <div class="space-y-1"><label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Payload Description</label><div class="relative group"><i data-lucide="package" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"></i><input type="text" id="item" class="w-full pl-11 pr-4 py-3.5 bg-slate-950/50 border border-slate-800 rounded-xl text-sm focus:outline-none focus:border-indigo-500/50 transition-all" required></div></div>
+                    <div class="space-y-1"><label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Receiver's Phone</label><div class="relative group"><i data-lucide="phone" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"></i><input type="tel" id="phone" class="w-full pl-11 pr-4 py-3.5 bg-slate-950/50 border border-slate-800 rounded-xl text-sm focus:outline-none focus:border-indigo-500/50 transition-all" required></div></div>
+                    <div class="space-y-1"><label class="text-[10px] font-bold text-indigo-400 uppercase tracking-wider">Your Offer (₦)</label><div class="relative group"><i data-lucide="wallet" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-indigo-400"></i><input type="number" id="offerPrice" placeholder="e.g. 1500" class="w-full pl-11 pr-4 py-3.5 bg-indigo-500/10 border border-indigo-500/30 rounded-xl text-sm font-bold text-white focus:outline-none focus:border-indigo-500 transition-all" required></div></div>
+                    <button type="submit" class="w-full mt-4 bg-indigo-600 hover:bg-indigo-500 text-white font-black py-4 px-4 rounded-xl transition-all shadow-[0_0_20px_rgba(79,70,229,0.3)] flex justify-center items-center gap-2 transform hover:-translate-y-1"><i data-lucide="radio" class="w-5 h-5"></i> Broadcast Job</button>
+                </form>
+            </div>
         </div>
 
-        <form id="deliveryForm" class="space-y-5 relative z-10">
-            <div class="space-y-1">
-                <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Pickup Address</label>
-                <div class="relative group"><i data-lucide="map-pin" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"></i><input type="text" id="pickup" class="w-full pl-10 pr-4 py-2.5 bg-slate-950/50 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-indigo-500/50" required></div>
-            </div>
-            <div class="space-y-1">
-                <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Drop-off Address</label>
-                <div class="relative group"><i data-lucide="navigation" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"></i><input type="text" id="dropoff" class="w-full pl-10 pr-4 py-2.5 bg-slate-950/50 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-indigo-500/50" required></div>
-            </div>
-            <div class="space-y-1">
-                <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Payload Description</label>
-                <div class="relative group"><i data-lucide="package" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"></i><input type="text" id="item" class="w-full pl-10 pr-4 py-2.5 bg-slate-950/50 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-indigo-500/50" required></div>
-            </div>
-            <div class="space-y-1">
-                <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Receiver's Phone</label>
-                <div class="relative group"><i data-lucide="phone" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"></i><input type="tel" id="phone" class="w-full pl-10 pr-4 py-2.5 bg-slate-950/50 border border-slate-800 rounded-lg text-sm focus:outline-none focus:border-indigo-500/50" required></div>
-            </div>
-            <div class="space-y-1">
-                <label class="text-xs font-semibold text-indigo-400 uppercase tracking-wider">Your Base Offer (₦)</label>
-                <div class="relative group"><i data-lucide="wallet" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-indigo-400"></i><input type="number" id="offerPrice" placeholder="e.g. 1500" class="w-full pl-10 pr-4 py-2.5 bg-indigo-500/10 border border-indigo-500/30 rounded-lg text-sm font-bold text-white focus:outline-none focus:border-indigo-500" required></div>
-            </div>
-            <button type="submit" class="w-full mt-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 px-4 rounded-lg transition-all shadow-[0_0_15px_rgba(79,70,229,0.3)] flex justify-center items-center gap-2"><i data-lucide="radio" class="w-4 h-4"></i> Broadcast to Network</button>
-        </form>
-
-        <div id="vendorTracking" class="mt-8 pt-6 border-t border-slate-800/50 hidden relative z-10">
-            <h3 class="text-sm font-bold text-slate-300 mb-4 flex items-center gap-2"><i data-lucide="activity" class="w-4 h-4 text-cyan-400"></i> Active Dispatches</h3>
-            <div id="myOrdersList" class="space-y-4 mb-6"></div>
-            <h3 class="text-sm font-bold text-slate-300 mb-4 flex items-center gap-2 border-t border-slate-800/50 pt-4"><i data-lucide="archive" class="w-4 h-4 text-slate-500"></i> Delivery History</h3>
-            <div id="myHistoryList" class="space-y-4"></div>
+        <div class="w-full lg:w-2/3" id="vendorTracking">
+            <h3 class="text-lg font-black text-white mb-5 flex items-center gap-2"><i data-lucide="activity" class="w-5 h-5 text-cyan-400"></i> Active Dispatches</h3>
+            <div id="myOrdersList" class="space-y-5 mb-10"></div>
+            
+            <h3 class="text-sm font-bold text-slate-400 mb-5 flex items-center gap-2 border-t border-slate-800/80 pt-6 uppercase tracking-widest"><i data-lucide="archive" class="w-4 h-4 text-slate-500"></i> Delivery History</h3>
+            <div id="myHistoryList" class="space-y-5"></div>
         </div>
     </div>
 
-    <div id="authModal" class="fixed inset-0 z-[300] bg-slate-950/95 backdrop-blur-md flex items-center justify-center">
-        <div class="bg-slate-900 border border-slate-800 p-8 rounded-2xl shadow-2xl w-full max-w-sm">
-            <div class="text-center mb-6"><img src="https://i.pinimg.com/736x/f9/24/e0/f924e0328e89eaa6c6022dfd7bec3ed6.jpg" class="w-20 h-20 rounded-2xl object-cover mx-auto mb-6 border-2 border-slate-700"><h2 class="text-2xl font-bold text-white">Vendor Access</h2></div>
-            <form id="authForm" class="space-y-4">
-                <div><label class="text-xs font-semibold text-slate-400 uppercase">Username</label><div class="relative group mt-1"><i data-lucide="user" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"></i><input type="text" id="authUsername" class="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-800 rounded-lg text-white" required></div></div>
-                <div><label class="text-xs font-semibold text-slate-400 uppercase">Password</label><div class="relative group mt-1"><i data-lucide="lock" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"></i><input type="password" id="authPassword" class="w-full pl-10 pr-4 py-3 bg-slate-950 border border-slate-800 rounded-lg text-white" required></div></div>
-                <p id="authError" class="text-xs text-rose-500 font-bold hidden text-center"></p>
-                <button type="submit" id="authBtn" class="w-full mt-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-lg shadow-[0_0_15px_rgba(79,70,229,0.3)]">Access Portal</button>
+    <div id="authModal" class="fixed inset-0 z-[300] bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 p-8 sm:p-10 rounded-[2rem] shadow-2xl w-full max-w-sm relative overflow-hidden">
+            <div class="text-center mb-8">
+                <div class="w-20 h-20 bg-indigo-500/10 rounded-[1.5rem] flex items-center justify-center mx-auto mb-5 border border-indigo-500/20 shadow-[0_0_20px_rgba(79,70,229,0.15)] transform rotate-3">
+                    <i data-lucide="store" class="w-10 h-10 text-indigo-400 -rotate-3"></i>
+                </div>
+                <h2 class="text-3xl font-black text-white tracking-tight">Vendor Portal</h2>
+                <p class="text-sm text-slate-400 mt-2">Sign in to broadcast your packages.</p>
+            </div>
+
+            <form id="authForm" class="space-y-5">
+                <div>
+                    <div class="relative group mt-1">
+                        <i data-lucide="user" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-indigo-400 transition-colors"></i>
+                        <input type="text" id="authUsername" placeholder="Username" class="w-full pl-12 pr-4 py-4 bg-slate-950/50 border border-slate-800 rounded-2xl text-white text-sm focus:outline-none focus:border-indigo-500 transition-colors shadow-inner" required>
+                    </div>
+                </div>
+                <div>
+                    <div class="relative group mt-1">
+                        <i data-lucide="lock" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-indigo-400 transition-colors"></i>
+                        <input type="password" id="authPassword" placeholder="Password" class="w-full pl-12 pr-4 py-4 bg-slate-950/50 border border-slate-800 rounded-2xl text-white text-sm focus:outline-none focus:border-indigo-500 transition-colors shadow-inner" required>
+                    </div>
+                </div>
+                
+                <p id="authError" class="text-xs text-rose-500 font-bold hidden text-center bg-rose-500/10 py-3 rounded-xl border border-rose-500/20"></p>
+                <button type="submit" id="authBtn" class="w-full bg-indigo-600 hover:bg-indigo-500 py-4 rounded-2xl text-white font-black shadow-[0_0_20px_rgba(79,70,229,0.3)] transition-all mt-4 transform hover:-translate-y-1">Access Network</button>
             </form>
         </div>
     </div>
 
-    <div id="qrModal" class="fixed inset-0 z-[100] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
-        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-2xl w-full max-w-sm transform scale-95 transition-all duration-300" id="qrModalContent"><div class="flex items-center gap-3 mb-2"><div id="qrModalIconContainer" class="p-2 rounded-full bg-indigo-500/10"><i id="qrModalIcon" data-lucide="alert-circle" class="w-5 h-5 text-indigo-400"></i></div><h3 id="qrModalTitle" class="text-lg font-bold text-white">Attention</h3></div><p id="qrModalMessage" class="text-sm text-slate-400 mb-6 mt-2">Message.</p><div class="flex gap-3 justify-end" id="qrModalButtons"></div></div>
+    <div id="qrModal" class="fixed inset-0 z-[400] bg-slate-950/80 backdrop-blur-md flex items-center justify-center hidden opacity-0 transition-opacity duration-300 p-4">
+        <div class="bg-slate-900 border border-slate-800 p-8 rounded-3xl shadow-2xl w-full max-w-sm transform scale-95 transition-all duration-300" id="qrModalContent">
+            <div class="flex items-center gap-4 mb-4">
+                <div id="qrModalIconContainer" class="p-3 rounded-2xl bg-indigo-500/10 border border-indigo-500/20">
+                    <i id="qrModalIcon" data-lucide="alert-circle" class="w-6 h-6 text-indigo-400"></i>
+                </div>
+                <h3 id="qrModalTitle" class="text-2xl font-bold text-white">Attention</h3>
+            </div>
+            <p id="qrModalMessage" class="text-sm text-slate-400 mb-8 mt-2 leading-relaxed">Message.</p>
+            <div class="flex gap-4 justify-end" id="qrModalButtons"></div>
+        </div>
+    </div>
+
+    <div id="podViewModal" class="fixed inset-0 z-[500] bg-slate-950/95 backdrop-blur-xl flex items-center justify-center hidden opacity-0 transition-opacity p-4">
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-3xl shadow-2xl w-full max-w-md text-center relative">
+            <button onclick="closePodView()" class="absolute -top-4 -right-4 bg-rose-500 text-white p-3 rounded-full shadow-lg hover:scale-110 transition-transform z-10"><i data-lucide="x" class="w-5 h-5"></i></button>
+            <div class="bg-indigo-500/10 text-indigo-400 text-[10px] font-black uppercase tracking-widest py-3 rounded-t-2xl mb-4 flex justify-center items-center gap-2 border border-indigo-500/20"><i data-lucide="camera" class="w-4 h-4"></i> Delivery Confirmed</div>
+            <img id="podImageDisplay" src="" class="w-full h-auto max-h-[70vh] rounded-2xl border border-slate-700 object-cover shadow-inner" alt="Proof of Delivery">
+        </div>
+    </div>
+
+    <div id="ratingModal" class="fixed inset-0 z-[200] bg-slate-950/90 backdrop-blur-xl flex items-center justify-center hidden opacity-0 transition-opacity duration-300 p-4">
+        <div class="bg-slate-900 border border-slate-800 p-10 rounded-3xl shadow-2xl w-full max-w-sm text-center transform scale-95 transition-all duration-300" id="ratingContent">
+            <div class="w-20 h-20 bg-emerald-500/20 rounded-[1.5rem] flex items-center justify-center mx-auto mb-6 border border-emerald-500/50 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
+                <i data-lucide="star" class="w-10 h-10 text-emerald-400"></i>
+            </div>
+            <h3 class="text-2xl font-black text-white mb-2">Rate your Rider</h3>
+            <p class="text-sm text-slate-400 mb-8" id="ratingInfo"></p>
+            <div class="flex justify-center gap-3 mb-10" id="starContainer"></div>
+            <button id="submitRating" class="w-full bg-emerald-600 hover:bg-emerald-500 text-slate-950 py-4 rounded-2xl font-black transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)]">Submit & Close Order</button>
+        </div>
     </div>
 
     <script>
         lucide.createIcons();
         let loggedInUsername = localStorage.getItem('qr_vendor_username');
         let refreshInterval;
-        let knownDeliveries = JSON.parse(localStorage.getItem('qr_known_deliveries')) || [];
 
         function checkAuth() {
             if (loggedInUsername) {
                 document.getElementById('authModal').classList.add('hidden');
                 document.getElementById('mainDashboard').classList.remove('hidden');
                 document.getElementById('vendorNav').classList.remove('hidden');
-                document.getElementById('welcomeText').innerText = `Welcome back, ${loggedInUsername}`;
+                document.getElementById('welcomeText').innerText = `${loggedInUsername}`;
                 loadVendorOrders(); refreshInterval = setInterval(loadVendorOrders, 3000);
             } else {
                 document.getElementById('authModal').classList.remove('hidden');
@@ -96,39 +136,54 @@
             const user = document.getElementById('authUsername').value.trim().toLowerCase();
             const pass = document.getElementById('authPassword').value;
             const errorText = document.getElementById('authError');
+            const btn = document.getElementById('authBtn');
+            
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 inline animate-spin"></i> Loading...`;
+            errorText.classList.add('hidden');
+
             try {
                 const res = await fetch('/vendor-auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: user, password: pass }) });
                 const data = await res.json();
-                if (res.ok) { localStorage.setItem('qr_vendor_username', user); loggedInUsername = user; errorText.classList.add('hidden'); checkAuth(); } 
+                if (res.ok) { localStorage.setItem('qr_vendor_username', user); loggedInUsername = user; checkAuth(); } 
                 else { errorText.innerText = data.message; errorText.classList.remove('hidden'); }
             } catch (err) { errorText.innerText = "Network error."; errorText.classList.remove('hidden'); }
+            
+            btn.innerText = "Access Network"; lucide.createIcons();
         });
 
         function logoutVendor() { localStorage.removeItem('qr_vendor_username'); loggedInUsername = null; checkAuth(); }
-        
+
         function showModal(type, title, message, confirmBtnText = "OK", isDestructive = false) {
             return new Promise((resolve) => {
                 const modal = document.getElementById('qrModal'); const modalContent = document.getElementById('qrModalContent');
                 const btnContainer = document.getElementById('qrModalButtons'); const icon = document.getElementById('qrModalIcon');
                 const iconContainer = document.getElementById('qrModalIconContainer');
+                
                 document.getElementById('qrModalTitle').innerText = title; document.getElementById('qrModalMessage').innerText = message;
                 
-                if (isDestructive) { icon.setAttribute('data-lucide', 'alert-triangle'); icon.className = "w-5 h-5 text-rose-500"; iconContainer.className = "p-2 rounded-full bg-rose-500/10"; } 
-                else { icon.setAttribute('data-lucide', 'info'); icon.className = "w-5 h-5 text-indigo-400"; iconContainer.className = "p-2 rounded-full bg-indigo-500/10"; }
+                if (isDestructive) { icon.setAttribute('data-lucide', 'alert-triangle'); icon.className = "w-6 h-6 text-rose-500"; iconContainer.className = "p-3 rounded-2xl bg-rose-500/10 border border-rose-500/20"; } 
+                else { icon.setAttribute('data-lucide', 'info'); icon.className = "w-6 h-6 text-indigo-400"; iconContainer.className = "p-3 rounded-2xl bg-indigo-500/10 border border-indigo-500/20"; }
                 
                 btnContainer.innerHTML = '';
                 const closeModal = () => { modal.classList.add('opacity-0'); modalContent.classList.add('scale-95'); setTimeout(() => modal.classList.add('hidden'), 300); };
+
                 if (type === 'confirm') {
-                    const cancelBtn = document.createElement('button'); cancelBtn.className = "px-4 py-2 rounded-lg text-sm font-bold text-slate-400 hover:text-white"; cancelBtn.innerText = "Cancel"; cancelBtn.onclick = () => { closeModal(); resolve(false); }; btnContainer.appendChild(cancelBtn);
+                    const cancelBtn = document.createElement('button');
+                    cancelBtn.className = "px-6 py-3 rounded-xl text-sm font-bold text-slate-400 hover:text-white transition-colors bg-slate-800"; cancelBtn.innerText = "Cancel"; cancelBtn.onclick = () => { closeModal(); resolve(false); };
+                    btnContainer.appendChild(cancelBtn);
                 }
-                const confirmBtn = document.createElement('button'); confirmBtn.className = `px-4 py-2 rounded-lg text-sm font-bold text-white transition-colors shadow-lg ${isDestructive ? "bg-rose-600" : "bg-indigo-600"}`; confirmBtn.innerText = confirmBtnText; confirmBtn.onclick = () => { closeModal(); resolve(true); }; btnContainer.appendChild(confirmBtn);
+                
+                const confirmBtn = document.createElement('button');
+                const baseStyle = "px-6 py-3 rounded-xl text-sm font-bold text-white transition-colors shadow-lg ";
+                confirmBtn.className = baseStyle + (isDestructive ? "bg-rose-600 hover:bg-rose-500" : "bg-indigo-600 hover:bg-indigo-500");
+                confirmBtn.innerText = confirmBtnText; confirmBtn.onclick = () => { closeModal(); resolve(true); };
+                btnContainer.appendChild(confirmBtn);
+
                 modal.classList.remove('hidden'); setTimeout(() => { modal.classList.remove('opacity-0'); modalContent.classList.remove('scale-95'); }, 10); lucide.createIcons();
             });
         }
         const customConfirm = (title, msg, btnText, isDestructive) => showModal('confirm', title, msg, btnText, isDestructive);
-        const customAlert = (title, msg) => showModal('alert', title, msg, "OK", false);
 
-        // 1. STANDARD FREE BROADCAST
         document.getElementById('deliveryForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const orderData = {
@@ -137,108 +192,167 @@
                 price: parseInt(document.getElementById('offerPrice').value), vendorId: loggedInUsername 
             };
             await fetch('/order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(orderData) });
-            document.getElementById('deliveryForm').reset();
-            loadVendorOrders();
+            document.getElementById('deliveryForm').reset(); loadVendorOrders();
         });
 
-        // 2. THE PAYSTACK ESCROW TRIGGER (Only fired when Vendor accepts a rider)
         function payAndLockRider(orderId, agreedAmount) {
             let handler = PaystackPop.setup({
-                // 🛑 PASTE YOUR PAYSTACK KEY HERE
+                // 🛑 PASTE YOUR LIVE OR TEST KEY HERE:
                 key: 'pk_test_83022bc020131c95224b33a5bc9d7e3a8bd4ddb5', 
-                
-                email: loggedInUsername + "@quickrider.ng",
-                amount: agreedAmount * 100, 
-                currency: 'NGN',
-                ref: 'QR_' + Math.floor((Math.random() * 1000000000) + 1), 
+                email: loggedInUsername + "@quickrider.ng", amount: agreedAmount * 100, currency: 'NGN',
                 callback: function(response) {
-                    fetch('/pay-and-lock', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ id: orderId, finalPrice: agreedAmount, paymentRef: response.reference })
-                    }).then(() => {
-                        customAlert("Escrow Funded", `₦${agreedAmount} is locked in escrow. The dispatcher is en route!`);
-                        loadVendorOrders();
-                    });
-                },
-                onClose: function() { customAlert("Payment Required", "You must fund escrow to lock in this dispatcher."); }
+                    fetch('/pay-and-lock', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: orderId, finalPrice: agreedAmount, paymentRef: response.reference }) }).then(() => loadVendorOrders());
+                }
             });
             handler.openIframe();
         }
 
-        async function declineCounter(jobId) {
-            await fetch('/decline-counter', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: jobId }) });
-            loadVendorOrders();
+        async function declineCounter(jobId) { await fetch('/decline-counter', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: jobId }) }); loadVendorOrders(); }
+        async function cancelOrder(jobId) { const isSure = await customConfirm("Abort Dispatch?", "Cancel this dispatch entirely?", "Yes, Abort", true); if(!isSure) return; await fetch('/cancel', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: jobId }) }); loadVendorOrders(); }
+        async function deleteHistory(jobId) { const isSure = await customConfirm("Hide Record?", "Remove this delivery from your view?", "Remove", true); if(!isSure) return; await fetch('/delete-history', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: jobId }) }); loadVendorOrders(); }
+
+        function viewPod(base64Image) { document.getElementById('podImageDisplay').src = base64Image; const modal = document.getElementById('podViewModal'); modal.classList.remove('hidden'); setTimeout(() => modal.classList.remove('opacity-0'), 10); }
+        function closePodView() { const modal = document.getElementById('podViewModal'); modal.classList.add('opacity-0'); setTimeout(() => modal.classList.add('hidden'), 300); }
+
+        let currentRatingJobId = null; let selectedStars = 0;
+        function openRating(id, name) {
+            currentRatingJobId = id; document.getElementById('ratingInfo').innerText = `How did ${name} do?`;
+            const container = document.getElementById('starContainer'); container.innerHTML = '';
+            for(let i=1; i<=5; i++) { container.innerHTML += `<svg id="star-${i}" onclick="setStars(${i})" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cursor-pointer text-slate-700 transition-all duration-200 hover:scale-110"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`; }
+            const modal = document.getElementById('ratingModal'); const content = document.getElementById('ratingContent');
+            modal.classList.remove('hidden'); setTimeout(() => { modal.classList.remove('opacity-0'); content.classList.remove('scale-95'); }, 10);
         }
-        async function cancelOrder(jobId) {
-            const isSure = await customConfirm("Abort Dispatch?", "Are you sure you want to cancel this dispatch?", "Yes, Abort", true);
-            if(!isSure) return; 
-            await fetch('/cancel', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: jobId }) });
-            loadVendorOrders();
+
+        function setStars(n) {
+            selectedStars = n;
+            for(let i=1; i<=5; i++) {
+                const star = document.getElementById(`star-${i}`);
+                if (i <= n) { star.classList.remove('text-slate-700', 'fill-none'); star.classList.add('text-amber-400', 'fill-amber-400'); } 
+                else { star.classList.remove('text-amber-400', 'fill-amber-400'); star.classList.add('text-slate-700', 'fill-none'); }
+            }
         }
-        async function deleteHistory(jobId) {
-            const isSure = await customConfirm("Erase Record?", "Permanently delete this delivery receipt?", "Delete", true);
-            if(!isSure) return; 
-            await fetch('/delete-history', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: jobId }) });
-            loadVendorOrders();
-        }
+
+        document.getElementById('submitRating').onclick = async () => {
+            if(selectedStars === 0) return alert("Please select a rating.");
+            await fetch('/rate-order', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ id: currentRatingJobId, rating: selectedStars }) });
+            const modal = document.getElementById('ratingModal'); modal.classList.add('opacity-0'); setTimeout(() => { modal.classList.add('hidden'); selectedStars = 0; }, 300); loadVendorOrders();
+        };
 
         async function loadVendorOrders() {
             if(!loggedInUsername) return; 
             try {
+                // Fetch Orders and Riders data to generate profiles dynamically
                 const response = await fetch('/orders'); const orders = await response.json();
-                const myOrders = orders.filter(o => o.vendorId === loggedInUsername);
-                const tracking = document.getElementById('vendorTracking');
+                const adminRes = await fetch('/admin-data'); const adminData = await adminRes.json();
+                const ridersData = adminData.riders || [];
+
+                const myOrders = orders.filter(o => o.vendorId === loggedInUsername && !o.deletedByVendor);
                 const list = document.getElementById('myOrdersList'); const history = document.getElementById('myHistoryList');
 
                 if (myOrders.length > 0) {
-                    tracking.classList.remove('hidden'); list.innerHTML = ''; history.innerHTML = ''; 
+                    list.innerHTML = ''; history.innerHTML = ''; 
                     let hasActive = false; let hasHistory = false;
                     
                     myOrders.forEach(order => {
-                        let statusUI = ""; let actionUI = ""; let riderDedicatedUI = ""; 
+                        let statusUI = ""; let actionUI = ""; let isHistory = false;
+                        
+                        // Extract Rider Profile Info
+                        let riderProfile = ridersData.find(r => r.plate === order.riderPlate) || {};
+                        let riderSelfie = riderProfile.selfie || `https://ui-avatars.com/api/?name=${encodeURIComponent(order.riderName || 'Rider')}&background=0D8B93&color=fff&size=200`;
+                        let riderRating = riderProfile.avgRating || 'New';
 
                         if (order.status === "Pending Rider") {
-                            statusUI = `<p class="text-[10px] text-amber-500 font-mono mt-0.5 animate-pulse">PENDING...</p>`;
-                            actionUI = `<button onclick="cancelOrder('${order.id}')" class="text-xs text-rose-400 border border-rose-500/20 bg-rose-500/10 px-3 py-1.5 rounded-lg hover:bg-rose-500/20 transition-colors">Abort</button>`;
+                            statusUI = `<p class="text-[10px] text-amber-500 font-mono mt-1 animate-pulse">PENDING DISPATCHER...</p>`;
+                            actionUI = `<button onclick="cancelOrder('${order.id}')" class="text-xs font-bold text-rose-400 border border-rose-500/20 bg-rose-500/10 px-5 py-3 rounded-xl hover:bg-rose-500/20 transition-colors w-full sm:w-auto">Abort Dispatch</button>`;
                             hasActive = true;
                         } 
-                        else if (order.status === "Awaiting Escrow") { // RIDER ACCEPTED BASE PRICE!
-                            statusUI = `<p class="text-[10px] text-emerald-400 font-bold mt-1 uppercase animate-pulse">Rider Accepted ₦${order.price}!</p>`;
-                            actionUI = `<button onclick="payAndLockRider('${order.id}', ${order.price})" class="text-xs font-bold bg-indigo-500 hover:bg-indigo-400 text-white px-4 py-2 rounded-lg shadow-[0_0_10px_rgba(99,102,241,0.5)] transition-all flex items-center gap-1"><i data-lucide="lock" class="w-3 h-3"></i> Pay ₦${order.price} to Start</button>`;
-                            riderDedicatedUI = `<div class="mt-4 pt-4 border-t border-slate-800/50"><div class="flex items-center gap-4 bg-slate-900/80 p-3 rounded-xl border border-slate-700/50"><img src="https://api.dicebear.com/7.x/initials/svg?seed=${order.riderName || 'Rider'}&backgroundColor=4f46e5" class="w-12 h-12 rounded-full border-2 border-slate-700"><div><p class="text-sm font-bold text-white">${order.riderName || 'Unknown'}</p><p class="text-[10px] font-mono text-slate-400 mt-0.5"><i data-lucide="shield-check" class="w-3 h-3 inline text-indigo-400"></i> Plate: ${order.riderPlate || 'N/A'}</p></div></div></div>`;
+                        else if (order.status === "Awaiting Escrow") {
+                            statusUI = `<p class="text-[10px] text-emerald-400 font-bold mt-1 uppercase animate-pulse"><i data-lucide="clock" class="w-3 h-3 inline"></i> Arrives in ${order.eta} Mins</p>`;
+                            actionUI = `<button onclick="payAndLockRider('${order.id}', ${order.price})" class="w-full text-sm font-black bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-4 rounded-2xl shadow-[0_0_20px_rgba(79,70,229,0.3)] transition-all transform hover:-translate-y-1"><i data-lucide="lock" class="w-4 h-4 inline mr-1"></i> Secure Rider for ₦${order.price}</button>`;
                             hasActive = true;
                         }
-                        else if (order.status === "Counter-Offer") { // RIDER WANTS MORE MONEY!
-                            statusUI = `<p class="text-[10px] text-orange-400 font-bold mt-1 uppercase animate-pulse">Rider asks for ₦${order.counterPrice}</p>`;
+                        else if (order.status === "Counter-Offer") {
+                            statusUI = `<p class="text-[10px] text-orange-400 font-bold mt-1 uppercase animate-pulse">Counter Offer Sent</p>`;
+                            actionUI = `<div class="flex flex-col sm:flex-row gap-3 w-full"><button onclick="payAndLockRider('${order.id}', ${order.counterPrice})" class="flex-1 text-sm font-black bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-4 rounded-2xl shadow-[0_0_20px_rgba(79,70,229,0.3)] transition-all">Accept ₦${order.counterPrice}</button><button onclick="declineCounter('${order.id}')" class="flex-1 text-sm font-bold bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 px-4 py-4 rounded-2xl transition-colors">Decline</button></div>`;
+                            hasActive = true;
+                        }
+                        else if (order.status === "En Route") {
+                            const deadline = order.startTime + (order.eta * 60000); const remaining = Math.round((deadline - Date.now()) / 60000); const timeColor = remaining < 0 ? 'text-rose-500 animate-pulse' : 'text-cyan-400';
+                            
+                            statusUI = `<p class="text-[10px] ${timeColor} font-mono mt-1 font-bold"><i data-lucide="clock" class="w-3 h-3 inline"></i> ${remaining < 0 ? 'LATE BY ' + Math.abs(remaining) : remaining + ' MINS REMAINING'}</p>`;
                             actionUI = `
-                                <div class="flex flex-col sm:flex-row gap-2">
-                                    <button onclick="payAndLockRider('${order.id}', ${order.counterPrice})" class="text-xs font-bold bg-indigo-500 hover:bg-indigo-400 text-white px-4 py-2 rounded-lg shadow-[0_0_10px_rgba(99,102,241,0.5)] transition-all">Pay & Lock ₦${order.counterPrice}</button>
-                                    <button onclick="declineCounter('${order.id}')" class="text-xs font-bold bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 px-4 py-2 rounded-lg transition-all">Decline</button>
-                                </div>
-                            `;
-                            riderDedicatedUI = `<div class="mt-4 pt-4 border-t border-slate-800/50"><div class="flex items-center gap-4 bg-slate-900/80 p-3 rounded-xl border border-slate-700/50"><img src="https://api.dicebear.com/7.x/initials/svg?seed=${order.riderName || 'Rider'}&backgroundColor=4f46e5" class="w-12 h-12 rounded-full border-2 border-slate-700"><div><p class="text-sm font-bold text-white">${order.riderName || 'Unknown'}</p><p class="text-[10px] font-mono text-slate-400 mt-0.5"><i data-lucide="shield-check" class="w-3 h-3 inline text-indigo-400"></i> Plate: ${order.riderPlate || 'N/A'}</p></div></div></div>`;
-                            hasActive = true;
-                        }
-                        else if (order.status === "En Route") { // PAID!
-                            statusUI = `<p class="text-[10px] text-cyan-400 font-mono mt-1"><i data-lucide="truck" class="w-3 h-3 inline"></i> EN ROUTE</p>`;
-                            actionUI = `<div class="flex flex-col items-end"><span class="text-xs text-slate-400 mb-1">Escrow Locked</span><span class="text-xl text-cyan-400 font-black">₦${order.price}</span></div>`;
-                            riderDedicatedUI = `<div class="mt-4 pt-4 border-t border-slate-800/50"><p class="text-[10px] text-cyan-400 uppercase tracking-wider mb-3 font-bold flex items-center gap-1"><i data-lucide="shield-check" class="w-3 h-3"></i> Verified Dispatcher Secured</p><div class="flex items-center gap-4 bg-indigo-900/20 p-4 rounded-xl border border-indigo-500/30 shadow-inner"><div class="relative"><img src="https://api.dicebear.com/7.x/initials/svg?seed=${order.riderName || 'Rider'}&backgroundColor=4f46e5" class="w-16 h-16 rounded-full border-2 border-indigo-400"><div class="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center"><i data-lucide="check" class="w-3 h-3 text-slate-950 font-bold"></i></div></div><div class="flex-1"><p class="text-xl font-extrabold text-white">${order.riderName || 'Unknown'}</p><p class="text-xs font-mono text-slate-300 mt-1">Plate: ${order.riderPlate || 'N/A'}</p></div></div></div>`;
+                                <div class="bg-indigo-500/10 border border-indigo-500/30 p-5 rounded-2xl text-center shadow-inner relative overflow-hidden">
+                                    <div class="absolute top-0 right-0 w-20 h-20 bg-indigo-500/10 rounded-full blur-xl -mr-10 -mt-10"></div>
+                                    <p class="text-[9px] text-indigo-300 uppercase font-bold tracking-widest mb-2 flex justify-center items-center gap-1"><i data-lucide="key-round" class="w-3 h-3"></i> Handover PIN</p>
+                                    <p class="text-4xl font-black text-indigo-400 tracking-[0.3em] leading-none ml-2">${order.pin || '----'}</p>
+                                    <p class="text-[10px] text-slate-500 mt-4 font-medium">*Text this to receiver to unlock delivery.</p>
+                                </div>`;
                             hasActive = true;
                         }
                         else if (order.status === "Delivered") {
-                            statusUI = `<p class="text-[10px] text-emerald-400 font-mono mt-0.5"><i data-lucide="check-circle" class="w-3 h-3 inline"></i> DELIVERED</p>`;
-                            actionUI = `<div class="flex items-center gap-3"><span class="text-xs text-emerald-400 font-bold bg-emerald-400/10 px-2 py-1 rounded">₦${order.price}</span><button onclick="deleteHistory('${order.id}')" class="text-slate-500 hover:text-rose-500 p-2 bg-slate-900 rounded-full"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div>`;
-                            hasHistory = true;
+                            statusUI = `<p class="text-[10px] text-emerald-400 font-mono mt-1"><i data-lucide="check-circle" class="w-3 h-3 inline"></i> DELIVERY CONFIRMED</p>`;
+                            let podButton = order.podImage ? `<button onclick="viewPod('${order.podImage}')" class="w-full sm:w-auto text-sm font-bold bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-400 border border-indigo-500/30 px-6 py-4 rounded-2xl flex items-center justify-center gap-2 transition-colors"><i data-lucide="camera" class="w-4 h-4"></i> View Proof</button>` : '';
+                            actionUI = `<div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full">${podButton}<button onclick="openRating('${order.id}', '${order.riderName}')" class="w-full sm:flex-1 text-sm font-black bg-emerald-600 hover:bg-emerald-500 text-slate-950 px-6 py-4 rounded-2xl transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] transform hover:-translate-y-1">Rate to Close</button></div>`;
+                            isHistory = true;
+                            hasHistory = true; // 🚨 FIX: Now registers that you have history
+                        }
+                        else if (order.status === "Archived") {
+                            statusUI = `<p class="text-[10px] text-slate-500 font-mono mt-1"><i data-lucide="archive" class="w-3 h-3 inline"></i> ARCHIVED</p>`;
+                            let podButton = order.podImage ? `<button onclick="viewPod('${order.podImage}')" class="text-slate-400 hover:text-indigo-400 p-3 bg-slate-900 rounded-xl transition-colors"><i data-lucide="camera" class="w-4 h-4"></i></button>` : '';
+                            actionUI = `<div class="flex items-center gap-4 bg-slate-900 p-2 rounded-2xl border border-slate-800">${podButton} <div class="px-4 border-l border-slate-800"><span class="text-amber-400 text-sm font-bold flex items-center gap-1"><i data-lucide="star" class="w-4 h-4 fill-amber-400"></i> ${order.rating}</span></div> <button onclick="deleteHistory('${order.id}')" class="text-slate-500 hover:text-rose-500 p-3 ml-auto transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div>`;
+                            isHistory = true;
+                            hasHistory = true; // 🚨 FIX: Now registers that you have history
                         }
 
-                        const cardHTML = `<div class="bg-slate-950/60 border border-slate-800 rounded-2xl p-5 mb-4"><div class="flex justify-between items-start"><div><h3 class="text-base font-bold text-slate-200">${order.item}</h3>${statusUI}</div>${actionUI}</div>${riderDedicatedUI}</div>`;
-                        if (order.status === "Delivered") history.innerHTML += cardHTML; else list.innerHTML += cardHTML;
+                        let cardHTML = "";
+
+                        // If NO rider is assigned yet (Single Column)
+                        if(order.status === "Pending Rider") {
+                            cardHTML = `
+                            <div class="bg-slate-950/60 border border-slate-800 rounded-[2rem] p-6 mb-5 shadow-lg transition-all hover:border-slate-700">
+                                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                    <div><h3 class="text-xl font-bold text-slate-200">${order.item}</h3>${statusUI}</div>
+                                    ${actionUI}
+                                </div>
+                            </div>`;
+                        } 
+                        // If Rider IS assigned (Sleek Two-Column Layout)
+                        else {
+                            cardHTML = `
+                            <div class="bg-slate-950/80 border border-slate-800 rounded-[2rem] p-6 mb-5 shadow-2xl flex flex-col md:flex-row gap-6 lg:gap-8 items-stretch relative overflow-hidden transition-all hover:border-slate-700">
+                                <div class="md:w-1/3 flex flex-col items-center justify-center text-center border-b md:border-b-0 md:border-r border-slate-800/60 pb-6 md:pb-0 md:pr-6 shrink-0 relative">
+                                    <div class="relative mb-4 group">
+                                        <img src="${riderSelfie}" class="w-28 h-28 lg:w-32 lg:h-32 rounded-full object-cover border-4 border-indigo-500/20 shadow-[0_0_25px_rgba(79,70,229,0.15)] transition-transform group-hover:scale-105">
+                                        <div class="absolute -bottom-2 -right-2 bg-slate-900 rounded-lg p-1 border border-slate-800">
+                                            <div class="bg-indigo-500/20 text-indigo-400 text-[10px] font-black px-2 py-1 rounded tracking-wider">${order.riderPlate}</div>
+                                        </div>
+                                    </div>
+                                    <h3 class="text-xl font-black text-white leading-tight mb-2">${order.riderName}</h3>
+                                    <p class="text-xs text-amber-400 font-bold bg-amber-400/10 px-3 py-1.5 rounded-full border border-amber-400/20 flex items-center gap-1 shadow-inner">
+                                        <i data-lucide="star" class="w-3 h-3 fill-amber-400"></i> ${riderRating}
+                                    </p>
+                                </div>
+                                
+                                <div class="md:w-2/3 flex flex-col justify-between w-full relative">
+                                    <div class="flex justify-between items-start mb-6">
+                                        <div><h3 class="text-2xl font-bold text-slate-100 mb-1">${order.item}</h3>${statusUI}</div>
+                                        <div class="text-right">
+                                            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Total Fee</p>
+                                            <span class="text-2xl text-emerald-400 font-black">₦${order.price || order.counterPrice}</span>
+                                        </div>
+                                    </div>
+                                    <div class="mt-auto w-full">${actionUI}</div>
+                                </div>
+                            </div>`;
+                        }
+
+                        if (isHistory) history.innerHTML += cardHTML; else list.innerHTML += cardHTML;
                     });
-                    if (!hasActive) list.innerHTML = `<div class="p-4 text-center"><p class="text-xs text-slate-500 italic">No active dispatches.</p></div>`;
-                    if (!hasHistory) history.innerHTML = `<div class="p-4 text-center"><p class="text-xs text-slate-500 italic">No completed deliveries.</p></div>`;
+                    
+                    if (!hasActive) list.innerHTML = `<div class="text-center py-12 bg-slate-950/40 rounded-[2rem] border border-slate-800/50"><i data-lucide="inbox" class="w-12 h-12 mx-auto text-slate-700 mb-4"></i><p class="text-sm text-slate-500 font-medium">No active dispatches right now.</p></div>`;
+                    if (!hasHistory) history.innerHTML = `<div class="text-center py-10 bg-slate-950/40 rounded-[2rem] border border-slate-800/50"><i data-lucide="history" class="w-10 h-10 mx-auto text-slate-700 mb-3"></i><p class="text-sm text-slate-500 font-medium">Your delivery history is empty.</p></div>`;
                     lucide.createIcons();
-                } else tracking.classList.add('hidden'); 
+                } 
             } catch (error) {}
         }
 
